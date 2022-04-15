@@ -58,24 +58,19 @@ def draw_styled_landmarks(image, results):
 
     # %%
 
-def media_detection (cap):
-    with mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5) as holistic:
-        # Read feed
-        ret, frame = cap.read()
 
-        # Make detections
-        image, results = mediapipe_detection(frame, holistic)
-        print(results)
+def media_detection(cap, holistic):
+    # Read feed
+    ret, frame = cap.read()
 
-        # Draw landmarks
-        draw_styled_landmarks(image, results)
+    # Make detections
+    image, results = mediapipe_detection(frame, holistic)
+    print(results)
 
-        return image
+    # Draw landmarks
+    draw_styled_landmarks(image, results)
 
-
-
-
-
+    return image
 
 
 """
