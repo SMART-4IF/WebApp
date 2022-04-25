@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1> VisioConference </h1>
+
+    <div>
+        {{ uuid|json_script:"uuid" }}
+        <h2> Créer un salon </h2>
+        <span>Identifiant : </span>
+        {{ uuid }} <br>
+        <span> Ajouter un mot de passe ? </span><input type="checkbox"> <br>
+        <input id="password"> <br>
+        <button id="create_room">Créer le salon !</button>
+    </div>
+
+    <div>
+        <h2> Rejoindre un salon </h2>
+        <span> Nom du salon : </span>
+        <input id="room_name"> <br>
+        <button id="join_room">Rejoindre !</button>
+    </div>
+
+    <script>
+        const uuid = JSON.parse(document.getElementById('uuid').textContent);
+
+        //TODO: handle password
+        document.querySelector('#create_room').onclick = function(e) {
+            window.location.href = window.location.href
+                + '/'
+                + uuid;
+        }
+    </script>
+</body>
+</html>
