@@ -4,7 +4,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        print(self.scope)
+
         self.room_name = self.scope['path'].replace('/visio_conference/', '')
         self.room_group_name = 'room_%s' % self.room_name
 
@@ -15,7 +15,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         await self.accept()
 
-    async def disconnect(self):
+    async def disconnect(self, close_code):
         await self.channel_layer.group_discard(
             self.room_group_name,
             self.channel_name
@@ -28,7 +28,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = receive_json['message']
         action = receive_json['action']
 
-        if(action == 'new-offer') or (action == 'new-answer'):
+        if (action == 'new-offer') or (action == 'new-answer'):
             receiver_channel_name = receive_json['message']['receiver_channel_name']
 
             receive_json['message']['receiver_channel_name'] = self.channel_name

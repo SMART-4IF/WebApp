@@ -5,6 +5,7 @@
     <title>Title</title>
 </head>
 <body>
+    {% include 'components/navbar.html' %}
     <h1> VisioConference </h1>
 
     <div>
@@ -24,6 +25,7 @@
         <button id="join_room">Rejoindre !</button>
     </div>
 
+
     <script>
         const uuid = JSON.parse(document.getElementById('uuid').textContent);
 
@@ -36,3 +38,4 @@
     </script>
 </body>
 </html>
+
