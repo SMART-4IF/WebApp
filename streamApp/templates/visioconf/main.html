@@ -18,7 +18,7 @@
 <!-- MODAL -->
 <div class="container mx-auto p-6 text-center">
 
-  <div class="mt-6" x-data="{ open: true }">
+  <div id="modal" class="mt-6" x-data="{ open: true }">
 
     <div style="background-color: rgba(0,0,0,.5);" x-show="open">
       <div>
@@ -28,7 +28,12 @@
 
         <div >
           <input id="username">
-          <button id="btn-join" @click="open = false">Join Room</button>
+            {% if password == 1 %}
+                <h2> Entrez le mot de passe du salon :</h2>
+                <input id="password">
+            {% endif %}
+            <span id="error"> </span>
+          <button id="btn-join">Join Room</button>
         </div>
       </div>
     </div>
@@ -63,7 +68,7 @@
     <a href="{% url 'visio_menu' %}">Quitter</a>
 </div>
 
-
+{{ room_uuid|json_script:"room_uuid" }}
 <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
 </body>
 </html>

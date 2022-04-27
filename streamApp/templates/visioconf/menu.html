@@ -5,37 +5,67 @@
     <title>Title</title>
 </head>
 <body>
-    {% include 'components/navbar.html' %}
-    <h1> VisioConference </h1>
+{% include 'components/navbar.html' %}
+<h1> VisioConference </h1>
 
-    <div>
-        {{ uuid|json_script:"uuid" }}
-        <h2> Créer un salon </h2>
-        <span>Identifiant : </span>
-        {{ uuid }} <br>
-        <span> Ajouter un mot de passe ? </span><input type="checkbox"> <br>
-        <input id="password"> <br>
-        <button id="create_room">Créer le salon !</button>
-    </div>
+<div>
+    {{ uuid|json_script:"uuid" }}
+    <h2> Créer un salon </h2>
+    <span>Identifiant : </span>
+    {{ uuid }} <br>
+    <span> Ajouter un mot de passe ? </span> <input id="check" type="checkbox"> <br>
+    <input id="password"> <br>
+    <button id="create_room">Créer le salon !</button>
+    <span id="error"> </span>
+</div>
 
-    <div>
-        <h2> Rejoindre un salon </h2>
-        <span> Nom du salon : </span>
-        <input id="room_name"> <br>
-        <button id="join_room">Rejoindre !</button>
-    </div>
+<div>
+    <h2> Rejoindre un salon </h2>
+    <span> Nom du salon : </span>
+    <input id="room_name"> <br>
+    <button id="join_room">Rejoindre !</button>
+</div>
 
 
-    <script>
-        const uuid = JSON.parse(document.getElementById('uuid').textContent);
+<script>
+    const uuid = JSON.parse(document.getElementById('uuid').textContent);
 
-        //TODO: handle password
-        document.querySelector('#create_room').onclick = function(e) {
-            window.location.href = window.location.href
-                + '/'
-                + uuid;
+    var password = ""
+
+    document.querySelector('#create_room').onclick = function (e) {
+
+        const check = document.getElementById('check')
+        if (check.checked) {
+            password = document.getElementById('password').value
         }
-    </script>
+
+        var data = JSON.stringify({
+            "value": password
+        });
+
+        var xhr = new XMLHttpRequest();
+
+        xhr.addEventListener("readystatechange", function () {
+            if (this.readyState === 4) {
+                console.log(this.response);
+                if (JSON.parse(this.response).result === 1) {
+                    window.location.href = window.location.href
+                    + '/' + uuid;
+                } else {
+                    document.getElementById('error').innerHTML = "Une erreur c'est produite, le salon n'a pas pu être créé"
+                }
+            }
+        });
+
+        xhr.open("POST", "http://localhost:8000/api/rooms/" + uuid);
+        xhr.setRequestHeader("Content-Type", "application/json");
+
+
+        xhr.send(data);
+
+
+    }
+</script>
 </body>
 </html>
 

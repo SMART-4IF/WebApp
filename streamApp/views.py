@@ -1,4 +1,5 @@
 import uuid
+import json
 
 from django.contrib.auth.decorators import login_required
 from django.http.response import StreamingHttpResponse
@@ -6,6 +7,8 @@ from django.shortcuts import render, redirect
 
 from streamApp.camera import VideoCamera
 from SmartWeb.settings import LOGIN_URL
+
+import requests
 
 
 # Create your views here.
@@ -48,8 +51,31 @@ def visio_menu(request):
 
 @login_required(login_url=LOGIN_URL)
 def visio_room(request, room_uuid):
-    return render(request, 'visioconf/main.html', {
-        'room_uuid': room_uuid
-    })
+    response = requests.get('http://localhost:8000/api/rooms/' + room_uuid)
+    response = json.loads(response.text)
+    print(response)
+    if response["result"] == 1:
+        password = 1
+        if response["value"] == "":
+            password = 0
+
+        return render(request, 'visioconf/main.html', {
+            'room_uuid': room_uuid,
+            'password': password
+        })
+    else:
+        return redirect('visio_menu')
 
 
+@login_required(login_url=LOGIN_URL)
+def local_chat(request):
+    return render(request, 'localChat/main.html')
+
+
+@login_required(login_url=LOGIN_URL)
+def learn_lsf(request):
+    return render(request, 'learnLSF/main.html')
+
+
+def about(request):
+    return render(request, 'about.html')
