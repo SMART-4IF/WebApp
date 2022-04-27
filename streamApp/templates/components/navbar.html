@@ -1,0 +1,13 @@
+<!-- templates/components/navbar.html-->
+<ul>
+  <li><a href="{% url 'index' %}">Home</a></li>
+  <li><a href="{% url 'visio_menu' %}">Visioconference</a></li>
+  <li><a href="{% url 'local_chat' %}">Groupe chat</a></li>
+  <li><a href="{% url 'learn_lsf' %}">Apprendre la langue des signes</a></li>
+  <li><a href="{% url 'about' %}">A propos</a></li>
+{% if user.is_authenticated %}
+      <li><a href="{% url 'logout' %}">Log Out</a></li>
+{% else %}
+    <li><a href="{% url 'login' %}">Log In</a></li>
+{% endif %}
+</ul>
