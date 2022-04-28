@@ -4,11 +4,15 @@
 {% block title %}Local Chat{% endblock %}
 
 {% block content %}
-{% include 'components/navbar.html' %}
-{% if user.is_authenticated %}
-  <h1>TODO</h1>
-{% else %}
-  <p>You are not logged in</p>
-  <a href="{% url 'login' %}">Log In</a>
-{% endif %}
+    {% include 'components/navbar.html' %}
+    {% if user.is_authenticated %}
+        <h1>TODO</h1>
+        <center>
+        <h1> Live Video Stream </h1>
+        <img src="{% url 'video_stream' %}">
+        </center>
+    {% else %}
+        <p>You are not logged in</p>
+        <a href="{% url 'login' %}">Log In</a>
+    {% endif %}
 {% endblock %}

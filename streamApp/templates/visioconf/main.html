@@ -67,7 +67,7 @@
 <div>
     <a href="{% url 'visio_menu' %}">Quitter</a>
 </div>
-
+{% csrf_token %}
 {{ room_uuid|json_script:"room_uuid" }}
 <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
 </body>

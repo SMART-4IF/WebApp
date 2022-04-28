@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import webcam
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -11,4 +12,5 @@ urlpatterns = [
     path('local_chat', views.local_chat, name='local_chat'),
     path('apprendre_lsf', views.learn_lsf, name='learn_lsf'),
     path('about', views.about, name='about'),
+    path('offer', webcam.offer, name='offer'),
 ]

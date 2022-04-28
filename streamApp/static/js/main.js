@@ -203,6 +203,89 @@ var userMedia = navigator.mediaDevices.getUserMedia(constraints)
         console.log('Error accessing media devices')
     })
 
+/************************************/
+
+/*//TODO: server side peerconnection
+function activateServerSideConnection() {
+    console.log("goo");
+    const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
+    var pc = new RTCPeerConnection(configuration)
+
+    pc.addEventListener('icegatheringstatechange', function (e) {
+        console.log(pc.iceGatheringState)
+    }, false);
+
+    pc.addEventListener('iceconnectionstatechange', function (e) {
+        console.log(pc.iceConnectionState)
+    }, false);
+
+    pc.addEventListener('signalingstatechange', function (e) {
+        console.log(pc.signalingState)
+    }, false);
+
+    var time_start = null;
+
+    function current_stamp() {
+        if (time_start === null) {
+            time_start = new Date().getTime();
+            return 0;
+        } else {
+            return new Date().getTime() - time_start;
+        }
+    }
+
+    navigator.mediaDevices.getUserMedia(constraints)
+        .then(stream => {
+            stream.getTracks().forEach(function(track) {
+                pc.addTrack(track, stream);
+            });
+        }).catch(error => {
+        console.log('Error accessing media devices')
+    })
+
+    console.log("negotiate")
+    return pc.createOffer().then(function (offer) {
+        console.log("negotiate2")
+        return pc.setLocalDescription(offer);
+    }).then(function () {
+        console.log("negotiate4")
+        var offer = pc.localDescription;
+        console.log("offfer")
+        console.log(offer)
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        console.log(csrftoken)
+        return fetch('/offer', {
+            body: JSON.stringify({
+                sdp: offer.sdp,
+                type: offer.type,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            method: 'POST'
+        });
+    }).then(function (response) {
+        console.log("negotiate5")
+        return response.json();
+    }).then(function (answer) {
+        console.log(answer)
+        return pc.setRemoteDescription(new RTCSessionDescription({ type: answer.type, sdp:answer.sdp }))
+        //return pc.setRemoteDescription(answer);
+
+    }).catch(function (e) {
+        console.log(e);
+    });
+
+
+
+}
+
+
+activateServerSideConnection().then(r => console.log(r))*/
+
+/************************************/
+
 var btnSendMsg = document.querySelector('#btn-send');
 
 btnSendMsg.addEventListener('click', sendMessageOnClick);
