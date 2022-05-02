@@ -9,7 +9,6 @@ import uuid
 import time
 
 import cv2
-from aiohttp import web
 from av import VideoFrame
 
 from aiortc import MediaStreamTrack, RTCPeerConnection, RTCSessionDescription
