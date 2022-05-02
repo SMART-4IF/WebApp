@@ -1,29 +1,38 @@
 <!DOCTYPE html>
+{% load static %}
+{% load tailwind_tags %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    {% tailwind_css %}
 </head>
 <body>
 {% include 'components/navbar.html' %}
-<h1> VisioConference </h1>
+<h1 class="text-gray-900 text-4xl text-center font-medium mt-16 mb-4"> Visioconférence </h1>
+<h3 class="text-gray-900 text-2xl text-center font-light mt-6 mb-12 w-2/3 mx-auto block"> Bienvenue dans votre espace de visioconférences. Pour converser avec vos amis, veuillez créer un salon ou en rejoindre un existant. </h3>
 
-<div>
-    {{ uuid|json_script:"uuid" }}
-    <h2> Créer un salon </h2>
-    <span>Identifiant : </span>
-    {{ uuid }} <br>
-    <span> Ajouter un mot de passe ? </span> <input id="check" type="checkbox"> <br>
-    <input id="password"> <br>
-    <button id="create_room">Créer le salon !</button>
-    <span id="error"> </span>
-</div>
-
-<div>
-    <h2> Rejoindre un salon </h2>
-    <span> Nom du salon : </span>
-    <input id="room_name"> <br>
-    <button id="join_room">Rejoindre !</button>
+<div class="flex place-content-evenly w-full px-20">
+    <div class="w-1/3 rounded-lg shadow-lg flex flex-col">
+        <img class="rounded-t-lg h-40 object-cover" src="https://mdbootstrap.com/img/new/standard/nature/184.jpg" alt=""/>
+        {{ uuid|json_script:"uuid" }}
+        <h2 class="text-gray-900 text-xl font-medium mx-6 mt-6 mb-4"> Créer un salon </h2>
+        <div class="mx-6 text-gray-700 text-base">Identifiant : </div>
+        <div class="mx-6 text-base mb-4">{{ uuid }}</div>
+        <div>
+            <span class="mx-6 text-gray-700 text-base mb-4 mt-6"> Ajouter un mot de passe ? </span> <input id="check" type="checkbox">
+        </div>
+        <input id="password" class="border border-black mx-6 py-2 px-3 my-2"> <br>
+        <button id="create_room" class="px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out mt-auto mx-6 mb-6 text-left w-max">Créer le salon</button>
+        <span id="error"> </span>
+    </div>
+    <div class="w-1/3 rounded-lg shadow-lg flex flex-col">
+        <img class="rounded-t-lg h-40 object-cover" src="https://mdbootstrap.com/img/new/standard/nature/184.jpg" alt=""/>
+        <h2 class="text-gray-900 text-xl font-medium mx-6 mt-6 mb-4"> Rejoindre un salon </h2>
+        <div class="mx-6 text-gray-700 text-base"> Identifiant du salon : </div>
+        <input id="room_name" class="border border-black mx-6 py-2 px-3 my-2"> <br>
+        <button id="join_room" class="px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out mt-auto mx-6 mb-6 text-left w-max">Rejoindre le salon</button>
+    </div>
 </div>
 
 
