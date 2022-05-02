@@ -43,7 +43,7 @@ function createPeerConnection() {
         console.log(evt)
         console.log(document.getElementById('video'))
         console.log(evt.streams[0])
-        document.getElementById('video').srcObject = evt.streams[0];
+        //document.getElementById('video').srcObject = evt.streams[0];
     });
 
     return pc;
@@ -107,6 +107,7 @@ function current_stamp() {
 }
 
 navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
+    document.getElementById('video').srcObject = stream
     stream.getTracks().forEach(function (track) {
         pc.addTrack(track, stream);
     });

@@ -96,6 +96,9 @@ class VideoTransformTrack(MediaStreamTrack):
 
                 #         img = cv2.resize(img,(cols//3, rows//3))
 
+                print(int(fps))
+                print(str(int(self.realFPS)))
+
             delta = time.time() - self.prevTime
             if delta > 1:
                 self.realFPS = (self.frameCount - self.prevFrameCount) / delta
