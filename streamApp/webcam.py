@@ -40,6 +40,7 @@ class VideoTransformTrack(MediaStreamTrack):
 
         self.prevTime = time.time()
         self.starttime1 = time.time()
+        self.skipFrames = True
         self.realFPS = 0
         self.prevGoodFrame = None
         self.frameCount = 0
@@ -56,6 +57,16 @@ class VideoTransformTrack(MediaStreamTrack):
 
         timer = cv2.getTickCount()
         # perform edge detection
+
+        if self.skipFrames:
+            while not self.track._queue.empty():
+                frame = await self.track.recv()
+                self.frameCount = self.frameCount + 1
+
+        self.frameProcessedCount = self.frameProcessedCount + 1
+
+        timer = cv2.getTickCount()
+
         try:
             img = frame.to_ndarray(format="bgr24")
 
