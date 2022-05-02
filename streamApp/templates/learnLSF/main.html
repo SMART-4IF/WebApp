@@ -4,26 +4,32 @@
 {% block title %}LearnLSF{% endblock %}
 
 {% block content %}
-{% include 'components/navbar.html' %}
-{% if user.is_authenticated %}
-  <h1>TODO</h1>
-    <div id="media">
-    <h2>Media</h2>
-    <div class="main-grid-container">
-        <div id="video-container">
-            <div><video id="video" style="float: left;" autoplay playsinline></video></div>
+    {% include 'components/navbar.html' %}
+    {% if user.is_authenticated %}
+        <h1>TODO</h1>
+        <div id="media">
+            <h2>Media</h2>
+            <div class="main-grid-container">
+                <div id="video-container">
+                    <div>
+                        <video id="video" style="float: left;  transform: scale(-1, 1); -webkit-transform: scale(-1, 1);" autoplay playsinline></video>
+                    </div>
+                </div>
+
+
+
+            </div>
+
         </div>
+        <h2>Data channel</h2>
+        <pre id="data-channel" style="height: 200px;"></pre>
+        {% csrf_token %}
+        <script type="text/javascript" src="{% static 'js/client.js' %}"></script>
 
 
-    </div>
-</div>
-    {% csrf_token %}
-<script type="text/javascript" src="{% static 'js/client.js' %}"></script>
+    {% else %}
 
-
-{% else %}
-
-  <p>You are not logged in</p>
-  <a href="{% url 'login' %}">Log In</a>
-{% endif %}
+        <p>You are not logged in</p>
+        <a href="{% url 'login' %}">Log In</a>
+    {% endif %}
 {% endblock %}
