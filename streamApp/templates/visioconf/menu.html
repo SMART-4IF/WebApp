@@ -1,29 +1,33 @@
 <!DOCTYPE html>
+{% load static %}
+{% load tailwind_tags %}
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    {% tailwind_css %}
 </head>
 <body>
 {% include 'components/navbar.html' %}
-<h1> VisioConference </h1>
+<h1> Bienvenue dans l'espace visioconférence </h1>
 
-<div>
-    {{ uuid|json_script:"uuid" }}
-    <h2> Créer un salon </h2>
-    <span>Identifiant : </span>
-    {{ uuid }} <br>
-    <span> Ajouter un mot de passe ? </span> <input id="check" type="checkbox"> <br>
-    <input id="password"> <br>
-    <button id="create_room">Créer le salon !</button>
-    <span id="error"> </span>
-</div>
-
-<div>
-    <h2> Rejoindre un salon </h2>
-    <span> Nom du salon : </span>
-    <input id="room_name"> <br>
-    <button id="join_room">Rejoindre !</button>
+<div class="flex w-full mx-20">
+    <div class="flex-1 border-none border-right-solid border-2 border-black">
+        {{ uuid|json_script:"uuid" }}
+        <h2 class="text-center  text-2xl"> Créer un salon </h2>
+        <span>Identifiant : </span>
+        {{ uuid }} <br>
+        <span> Ajouter un mot de passe ? </span> <input id="check" type="checkbox"> <br>
+        <input id="password" class="border-solid"> <br>
+        <button id="create_room" class="block px-10 py-3 mx-auto my-12 bg-green-500 text-white rounded text-lg hover:bg-green-600">Créer le salon</button>
+        <span id="error"> </span>
+    </div>
+    <div class="flex-1">
+        <h2 class="text-center text-2xl"> Rejoindre un salon </h2>
+        <span> Nom du salon : </span>
+        <input id="room_name" class="border-solid"> <br>
+        <button id="join_room" class="block px-10 py-3 mx-auto my-12 bg-green-500 text-white rounded text-lg hover:bg-green-600">Rejoindre !</button>
+    </div>
 </div>
 
 
