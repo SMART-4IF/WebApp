@@ -150,6 +150,7 @@ join.addEventListener('click', () => {
             })
 
             document.getElementById('modal').setAttribute("x-data", "{ open: false }")
+            document.getElementById('visio').setAttribute("x-data", "{ open2: true }")
             activateServerSideConnection()
         }
     } else {
