@@ -4,10 +4,15 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
-<h2>Log In</h2>
-<form method="post">
+<h2 class="text-2xl text-center mt-40">Qui êtes-vous ?</h2>
+<form method="post" class="w-96 mx-auto block my-10">
   {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Log In</button>
+    {% for field in form %}
+        <div class="flex flex-col my-4">
+            {{ field.errors }}
+            {{ field.label_tag }} {{ field }}
+        </div>
+    {% endfor %}
+  <button type="submit" class="block px-10 py-3 mx-auto my-12 bg-green-500 text-white rounded text-lg hover:bg-green-600">Connexion</button>
 </form>
 {% endblock %}
