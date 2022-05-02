@@ -149,6 +149,7 @@ join.addEventListener('click', () => {
             })
 
             document.getElementById('modal').setAttribute("x-data", "{ open: false }")
+            document.getElementById('visio').setAttribute("x-data", "{ open2: true }")
         }
     } else {
         document.getElementById('error').innerHTML = "Une erreur c'est produite, le nom ne peut pas être vide"
