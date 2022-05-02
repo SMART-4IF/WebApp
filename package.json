@@ -1,0 +1,13 @@
+{
+  "name": "WebApp",
+  "version": "1.0.0",
+  "dependencies": {
+    "autoprefixer": "^10.4.6",
+    "tailwindcss": "^3.0.24"
+  },
+  "scripts": {
+    "build": "postcss ./streamApp/static/css/tailwind.css -o ./streamApp/static/css/tailwind-output.css"
+  }
+}
+
+

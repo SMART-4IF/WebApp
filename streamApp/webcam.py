@@ -129,6 +129,7 @@ class VideoTransformTrack(MediaStreamTrack):
 
         return new_frame
 
+        """
         img = frame.to_ndarray(format="bgr24")
         img = cv2.cvtColor(cv2.Canny(img, 100, 200), cv2.COLOR_GRAY2BGR)
 
@@ -137,6 +138,7 @@ class VideoTransformTrack(MediaStreamTrack):
         new_frame.pts = frame.pts
         new_frame.time_base = frame.time_base
         return new_frame
+        """
 
 
 async def offer(request):
