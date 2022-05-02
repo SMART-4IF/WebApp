@@ -102,7 +102,6 @@ join.addEventListener('click', () => {
                         })
 
                         document.getElementById('modal').setAttribute("x-data", "{ open: false }")
-                        activateServerSideConnection()
                     } else {
                         document.getElementById('error').innerHTML = "Une erreur c'est produite, mauvais mot de passe"
                     }
@@ -150,7 +149,6 @@ join.addEventListener('click', () => {
             })
 
             document.getElementById('modal').setAttribute("x-data", "{ open: false }")
-            activateServerSideConnection()
         }
     } else {
         document.getElementById('error').innerHTML = "Une erreur c'est produite, le nom ne peut pas être vide"
@@ -163,12 +161,6 @@ const constraints = {
     'video': true,
     'audio': true,
 };
-
-// peer connection
-var pc = null;
-
-// data channel
-var dc = null, dcInterval = null;
 
 const localVideo = document.querySelector('#local-video');
 
@@ -213,89 +205,23 @@ var userMedia = navigator.mediaDevices.getUserMedia(constraints)
 
 /************************************/
 
-//TODO: server side peerconnection
+/*//TODO: server side peerconnection
 function activateServerSideConnection() {
-    function createPeerConnection() {
-        var config = {
-            sdpSemantics: 'unified-plan'
-        };
+    console.log("goo");
+    const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
+    var pc = new RTCPeerConnection(configuration)
 
-        config.iceServers = [{urls: ['stun:stun.l.google.com:19302']}];
+    pc.addEventListener('icegatheringstatechange', function (e) {
+        console.log(pc.iceGatheringState)
+    }, false);
 
+    pc.addEventListener('iceconnectionstatechange', function (e) {
+        console.log(pc.iceConnectionState)
+    }, false);
 
-        pc = new RTCPeerConnection(config);
-
-        // register some listeners to help debugging
-        pc.addEventListener('icegatheringstatechange', function () {
-            console.log(pc.iceGatheringState);
-        }, false);
-
-
-        pc.addEventListener('iceconnectionstatechange', function () {
-            console.log(pc.iceConnectionState);
-        }, false);
-
-        pc.addEventListener('signalingstatechange', function () {
-            console.log(pc.signalingState);
-        }, false);
-
-
-        // connect audio / video
-        pc.addEventListener('track', function (evt) {
-            console.log(evt)
-            console.log(document.getElementById('video'))
-            console.log(evt.streams[0])
-            //document.getElementById('video').srcObject = evt.streams[0];
-        });
-
-        return pc;
-    }
-
-    function negotiate() {
-        return pc.createOffer().then(function (offer) {
-            return pc.setLocalDescription(offer);
-        }).then(function () {
-            // wait for ICE gathering to complete
-            return new Promise(function (resolve) {
-                if (pc.iceGatheringState === 'complete') {
-                    resolve();
-                } else {
-                    function checkState() {
-                        if (pc.iceGatheringState === 'complete') {
-                            pc.removeEventListener('icegatheringstatechange', checkState);
-                            resolve();
-                        }
-                    }
-
-                    pc.addEventListener('icegatheringstatechange', checkState);
-                }
-            });
-        }).then(function () {
-            var offer = pc.localDescription;
-            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-            return fetch('/offer', {
-                body: JSON.stringify({
-                    sdp: offer.sdp,
-                    type: offer.type
-                }),
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken
-                },
-                method: 'POST'
-            });
-        }).then(function (response) {
-            return response.json();
-        }).then(function (answer) {
-            console.log(answer)
-
-            return pc.setRemoteDescription(answer);
-        }).catch(function (e) {
-            alert(e);
-        });
-    }
-
-    pc = createPeerConnection();
+    pc.addEventListener('signalingstatechange', function (e) {
+        console.log(pc.signalingState)
+    }, false);
 
     var time_start = null;
 
@@ -308,15 +234,55 @@ function activateServerSideConnection() {
         }
     }
 
-    navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
-        stream.getTracks().forEach(function (track) {
-            pc.addTrack(track, stream);
+    navigator.mediaDevices.getUserMedia(constraints)
+        .then(stream => {
+            stream.getTracks().forEach(function(track) {
+                pc.addTrack(track, stream);
+            });
+        }).catch(error => {
+        console.log('Error accessing media devices')
+    })
+
+    console.log("negotiate")
+    return pc.createOffer().then(function (offer) {
+        console.log("negotiate2")
+        return pc.setLocalDescription(offer);
+    }).then(function () {
+        console.log("negotiate4")
+        var offer = pc.localDescription;
+        console.log("offfer")
+        console.log(offer)
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        console.log(csrftoken)
+        return fetch('/offer', {
+            body: JSON.stringify({
+                sdp: offer.sdp,
+                type: offer.type,
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            method: 'POST'
         });
-        return negotiate();
-    }, function (err) {
-        alert('Could not acquire media: ' + err);
+    }).then(function (response) {
+        console.log("negotiate5")
+        return response.json();
+    }).then(function (answer) {
+        console.log(answer)
+        return pc.setRemoteDescription(new RTCSessionDescription({ type: answer.type, sdp:answer.sdp }))
+        //return pc.setRemoteDescription(answer);
+
+    }).catch(function (e) {
+        console.log(e);
     });
+
+
+
 }
+
+
+activateServerSideConnection().then(r => console.log(r))*/
 
 /************************************/
 
