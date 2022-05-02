@@ -67,7 +67,7 @@ class VideoTransformTrack(MediaStreamTrack):
             x = w // 3
 
             image, results = media.mediapipe_detection(img, self.holistic)
-            print(results)
+            #(results)
 
             timeVal = str(timer)
             y1 = y
@@ -83,7 +83,6 @@ class VideoTransformTrack(MediaStreamTrack):
                             cv2.FONT_HERSHEY_SIMPLEX,
                             0.75, infoColor, 2)
 
-
                 # Calculate Frames per second (FPS)
                 fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer)
 
@@ -95,13 +94,13 @@ class VideoTransformTrack(MediaStreamTrack):
 
                 #         img = cv2.resize(img,(cols//3, rows//3))
 
-                print(int(fps))
-                print(str(int(self.realFPS)))
+                #print(int(fps))
+                #print(str(int(self.realFPS)))
 
             delta = time.time() - self.prevTime
             if delta > 1:
                 self.realFPS = (self.frameCount - self.prevFrameCount) / delta
-                print(fps, self.realFPS, img.shape, timeVal)
+                #print(fps, self.realFPS, img.shape, timeVal)
                 self.prevFrameCount = self.frameCount
                 self.prevTime = time.time()
                 if infoColor == infoColor1:
@@ -110,7 +109,7 @@ class VideoTransformTrack(MediaStreamTrack):
                     infoColor = infoColor1
 
             try:
-                media.draw_styled_landmarks(img,results)
+                media.draw_styled_landmarks(img, results)
                 new_frame = VideoFrame.from_ndarray(img, format="bgr24")
                 self.prevGoodFrame = new_frame
             except Exception as e:
@@ -158,6 +157,17 @@ async def offer(request):
     #    recorder = MediaRecorder(args.write_audio)
     # else:
     #    recorder = MediaBlackhole()
+
+    dc = pc.createDataChannel('chat')
+
+    def send_data(message):
+        if dc.readyState == "open":
+            dc.send(message)
+
+    @dc.on("open")
+    def say_hello():
+        if dc.readyState == "open":
+            dc.send("hello")
 
     @pc.on("datachannel")
     def on_datachannel(channel):

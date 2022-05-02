@@ -43,7 +43,7 @@ function createPeerConnection() {
         console.log(evt)
         console.log(document.getElementById('video'))
         console.log(evt.streams[0])
-        //document.getElementById('video').srcObject = evt.streams[0];
+        //document.getElementById('video2').srcObject = evt.streams[0];
     });
 
     return pc;
@@ -78,7 +78,7 @@ function negotiate() {
             }),
             headers: {
                 'Content-Type': 'application/json',
-                 'X-CSRFToken': csrftoken
+                'X-CSRFToken': csrftoken
             },
             method: 'POST'
         });
@@ -106,6 +106,42 @@ function current_stamp() {
     }
 }
 
+var parameters = {"ordered": true};
+var dataChannelLog = document.getElementById('data-channel')
+
+dc = pc.createDataChannel('chat', parameters);
+dc.onclose = function () {
+    clearInterval(dcInterval);
+    dataChannelLog.textContent += '- close\n';
+};
+dc.onopen = function () {
+    dataChannelLog.textContent += '- open\n';
+        var message = 'ping ' + current_stamp();
+        dataChannelLog.textContent += '> ' + message + '\n';
+        dc.send(message);
+};
+dc.onmessage = function (evt) {
+    dataChannelLog.textContent += '< ' + evt.data + '\n';
+
+    if (evt.data.substring(0, 4) === 'pong') {
+        var elapsed_ms = current_stamp() - parseInt(evt.data.substring(5), 10);
+        dataChannelLog.textContent += ' RTT ' + elapsed_ms + ' ms\n';
+    }
+};
+
+pc.ondatachannel = function(event) {
+  var channel = event.channel;
+    channel.onopen = function(event) {
+        dataChannelLog.textContent += '- open\n';
+    channel.send('Hi back!');
+  }
+  channel.onmessage = function(event) {
+    console.log(event.data);
+    dataChannelLog.textContent += '< ' + event.data + '\n';
+
+  }
+}
+
 navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
     document.getElementById('video').srcObject = stream
     stream.getTracks().forEach(function (track) {
@@ -115,8 +151,6 @@ navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
 }, function (err) {
     alert('Could not acquire media: ' + err);
 });
-
-
 
 
 function stop() {
