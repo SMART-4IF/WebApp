@@ -339,9 +339,9 @@ var userMedia = navigator.mediaDevices.getUserMedia(constraints)
             audioTracks[0].enabled = !audioTracks[0].enabled
 
             if (audioTracks[0].enabled) {
-                btnToggleAudio.innerHTML = 'Audio Mute';
+                btnToggleAudio.innerHTML = '<span class="material-symbols-outlined">mic</span>';
             } else {
-                btnToggleAudio.innerHTML = 'Audio unMute'
+                btnToggleAudio.innerHTML = '<span class="material-symbols-outlined">mic_off</span>'
             }
         })
 
@@ -349,9 +349,9 @@ var userMedia = navigator.mediaDevices.getUserMedia(constraints)
             videoTracks[0].enabled = !videoTracks[0].enabled
 
             if (videoTracks[0].enabled) {
-                btnToggleVideo.innerHTML = 'Video Off';
+                btnToggleVideo.innerHTML = '<span class="material-symbols-outlined">videocam</span>';
             } else {
-                btnToggleVideo.innerHTML = 'Video On'
+                btnToggleVideo.innerHTML = '<span class="material-symbols-outlined">videocam_off</span>'
             }
         })
     })
