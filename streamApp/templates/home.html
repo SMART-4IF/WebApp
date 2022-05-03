@@ -5,11 +5,12 @@
 
 {% block content %}
 {% include 'components/navbar.html' %}
-{% if user.is_authenticated %}
-  Hi {{ user.username }}!
-  <p><a href="{% url 'logout' %}">Log Out</a></p>
-{% else %}
-  <p>You are not logged in</p>
-  <a href="{% url 'login' %}">Log In</a>
-{% endif %}
+
+<div id="baniere" class="mt-20">
+  <div id></div>
+  <div></div>
+  <div></div>
+</div>
+
 {% endblock %}
+
