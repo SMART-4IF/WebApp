@@ -158,4 +158,4 @@ INTERNAL_IPS = [
 
 NPM_BIN_PATH = "C:/Program Files/nodejs/node.exe"
 
-#CSRF_TRUSTED_ORIGINS = ['https://475a-134-214-58-3.eu.ngrok.io']
+#CSRF_TRUSTED_ORIGINS = ['https://9fe2-134-214-58-29.eu.ngrok.io']
