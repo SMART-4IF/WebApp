@@ -194,7 +194,7 @@ async def offer(request):
     def say_hello():
         print("dc is open")
         if dc.readyState == "open":
-            dc.send("hello")
+            dc.send("Sign detection ON")
 
     @pc.on("datachannel")
     def on_datachannel(channel):
