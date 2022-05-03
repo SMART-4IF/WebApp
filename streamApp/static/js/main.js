@@ -540,6 +540,7 @@ function createVideo(peerUsername) {
     remoteVideo.id = peerUsername + '-video';
     remoteVideo.autoplay = true;
     remoteVideo.playsInline = true;
+    remoteVideo.style = "transform: scale(-1, 1); -webkit-transform: scale(-1, 1);"
 
     var videoWrapper = document.createElement('div');
     videoWrapper.className = "relative max-w-full min-w-lg"
