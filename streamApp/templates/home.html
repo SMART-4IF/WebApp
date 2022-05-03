@@ -7,22 +7,22 @@
 {% block content %}
 {% include 'components/navbar.html' %}
 
-<div id="baniere" class="mt-52 flex mx-44 items-center">
+<div id="baniere" class="mt-36 flex mx-44 items-center">
   <div class="w-2/3 mr-20">
       <h1 class="text-gray-900 text-2xl font-semibold uppercase">Bobby: l'outil pour inclure les personnes muettes et malentendantes</h1>
       <div class="text-gray-700 text-lg mt-2">Découvrez Bobby, l’intelligence artificielle capable de comprendre la LSF et d’assurer la traduction entre les personnes entendantes et les personnes signantes.</div>
   </div>
-  <img class="w-1/3" src="{% static 'creerSalon.png' %}" alt=""/>
+  <img class="w-1/3" src="{% static 'baniere.png' %}" alt=""/>
 </div>
 
-<div class="material-symbols-outlined m-auto text-blue-500 text-center w-full mt-32" style="font-size: 70px;">
+<div class="material-symbols-outlined m-auto text-blue-500 text-center w-full mt-20" style="font-size: 70px;">
     south
 </div>
 
 <div class="mx-60 mt-20 mb-40">
     <h1 class="text-gray-900 text-center text-2xl font-semibold">Que pouvez-vous faire grâce à Bobby ?</h1>
     <div class="flex mt-32 items-center">
-        <img class="w-1/3" src="{% static 'rejoindreSalon.png' %}" alt=""/>
+        <img class="w-1/3 rounded-lg" src="{% static 'creerSalon.png' %}" alt=""/>
         <div class="w-2/3 ml-20">
           <h1 class="text-gray-900 text-2xl font-semibold">Visioconférences</h1>
           <div class="text-gray-700 text-lg mt-2">
@@ -39,10 +39,10 @@
               S’il entend des paroles à travers le micro, il sous-titre une transcription et s’il détecte des signes LSF, il les prononce à l’oral.
           </div>
         </div>
-        <img class="w-1/3" src="{% static 'rejoindreSalon.png' %}" alt=""/>
+        <img class="w-1/3 rounded-lg" src="{% static 'rejoindreSalon.png' %}" alt=""/>
     </div>
     <div class="flex mt-32 items-center">
-        <img class="w-1/3" src="{% static 'rejoindreSalon.png' %}" alt=""/>
+        <img class="w-1/3 rounded-lg" src="{% static 'apprendreLSF.png' %}" alt=""/>
         <div class="w-2/3 ml-20">
           <h1 class="text-gray-900 text-2xl font-semibold">Apprenez la LSF</h1>
           <div class="text-gray-700 text-lg mt-2">
