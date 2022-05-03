@@ -78,60 +78,66 @@
 </div>
 
 
-<div class="grid grid-cols-2 divide-x" id="visio" x-data="{ open2: false }">
+<div class="grid grid-cols-5 gap-3" id="visio" x-data="{ open2: false }">
  
   
 
-      <div id="video-container" x-show="open2" class="border-r">
-        <h3 x-show="open2" >Vous êtes connecté sous le nom de</h3>
-        <h2 id="label-username" x-show="open2" >USERNAME</h2>
-       
-          <div>
-              <video id="local-video" style="float: left; transform: scale(-1, 1); -webkit-transform: scale(-1, 1);" autoplay playsinline></video>
-          </div>
-        
-        <button id="btn-toggle-audio">Audio Mute</button>
-        <button id="btn-toggle-video">Video off</button>
+  <div id="video-container" x-show="open2" class="bg-red-100 col-span-4">
+    <h3 x-show="open2" >Vous êtes connecté sous le nom de</h3>
+    <h2 id="label-username" x-show="open2" >USERNAME</h2>
+   
+      <div>
+          <video id="local-video" class="w-full h-full top-0" style="transform: scale(-1, 1); -webkit-transform: scale(-1, 1);" autoplay playsinline></video>
+      </div>
+    
+    <button id="btn-toggle-audio">Audio Mute</button>
+    <button id="btn-toggle-video">Video off</button>
+  </div>
+
+  
+  
+  <!--
+  <div id="chat" x-show="open2">
+      <h3> CHAT</h3>
+      <div id="messages">
+          <ul id="message-list"></ul>
       </div>
 
-      
-      
-      <!--
-      <div id="chat" x-show="open2">
-          <h3> CHAT</h3>
-          <div id="messages">
-              <ul id="message-list"></ul>
-          </div>
-
-          <div>
-              <input id="msg">
-              <button id="btn-send">Envoyer</button>
-          </div>
+      <div>
+          <input id="msg">
+          <button id="btn-send">Envoyer</button>
       </div>
-  -->
+  </div>
+-->
 
-  <div id="chat" x-show="open2" class="border-b">
-      <div class="flex justify-center">
-        <div class="block rounded-lg shadow-lg bg-white max-w-sm text-center">
-          <div class="py-3 px-6 border-b border-gray-300">
-            Messagerie instantannée
-          </div>
-          <div class="p-6">
-            <p class="text-gray-700 text-base mb-4">
-              Vous pouvez communiquer par écrit avec l'ensemble des participants.
-            </p>
-            <div id="messages">
-              <ul id="message-list"></ul>
-          </div>
-            <input id="msg" class="border-b border-gray-300">
-            <button id="btn-send" type="button" class=" inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Envoyer</button>
-          </div>
-        </div>
+<div id="chat" x-show="open2" class="bg-blue-100">
+  <div class="flex justify-center">
+    <div class="block rounded-lg shadow-lg bg-white max-w-sm text-center">
+      <div class="py-3 px-6 border-b border-gray-300">
+        Messagerie instantannée
+      </div>
+      <div class="p-6">
+        <p class="text-gray-700 text-base mb-4">
+          Vous pouvez communiquer par écrit avec l'ensemble des participants.
+        </p>
+        <div id="messages">
+          <ul id="message-list"></ul>
+      </div>
+        <input id="msg" class="border-b border-gray-300">
+        <button id="btn-send" type="button" class=" inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Envoyer</button>
       </div>
     </div>
+  </div>
+</div>
 
 
 
+</div>
+
+<div>
+<a href="{% url 'visio_menu' %} " class="absolute bottom-0 right-0 h-300 w-300">
+    <button type="button" class=" inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Quitter</button>
+</a>
 </div>
 
 
