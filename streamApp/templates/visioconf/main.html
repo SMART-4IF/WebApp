@@ -46,7 +46,7 @@
 
 <div id="modal" class="mt-6" x-data="{ open: true }">
   <div class="flex justify-center" x-show="open">
-    <div class="rounded-lg shadow-lg bg-white max-w-sm mt-16" >
+    <div class="rounded-lg shadow-lg bg-white max-w-sm absolute top-1/2" style="transform: translateY(-50%);" >
       <a href="#!">
         <img class="rounded-t-lg w-full" src="{% static 'rejoindreSalon.png' %}" alt=""/>
       </a>
@@ -64,7 +64,12 @@
                 <input id="password" class="border border-black py-2 px-3 my-2 w-full">
             {% endif %}
             <span id="error"> </span>
-          <button id="btn-join" class="inline-block mt-4 px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Rejoindre la salle</button>
+            <div>
+                <button id="btn-join" class="inline-block mt-4 px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Rejoindre la salle</button>
+                <a href="{% url 'visio_menu' %} " class="ml-2">
+                    <button type="button" class=" inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Quitter</button>
+                </a>
+            </div>
         </div>
 
       </div>
@@ -127,12 +132,6 @@
 
 
 
-</div>
-
-<div>
-    <a href="{% url 'visio_menu' %} " class="absolute bottom-0 right-0 h-300 w-300">
-        <button type="button" class=" inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Quitter</button>
-    </a>
 </div>
 
 
