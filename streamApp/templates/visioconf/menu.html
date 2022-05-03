@@ -74,6 +74,13 @@
 
 
     }
+
+
+    document.querySelector('#join_room').onclick = function (e) {
+        const room = document.getElementById('room_name').value
+        window.location.href = window.location.href
+                    + '/' + room;
+    }
 </script>
 </body>
 </html>
