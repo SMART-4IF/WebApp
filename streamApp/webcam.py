@@ -9,7 +9,6 @@ import uuid
 import time
 
 import cv2
-from aiohttp import web
 from av import VideoFrame
 
 from aiortc import MediaStreamTrack, RTCPeerConnection, RTCSessionDescription
@@ -18,6 +17,8 @@ from django.http import HttpResponse
 
 from streamApp import media
 from streamApp.media import mp_holistic
+
+from streamApp.Grammar.traitementGrammaire import StructurePhrase
 
 logger = logging.getLogger("pc")
 pcs = set()
@@ -34,18 +35,22 @@ class VideoTransformTrack(MediaStreamTrack):
 
     kind = "video"
 
-    def __init__(self, track):
+    def __init__(self, track, dc):
         super().__init__()  # don't forget this!
         self.track = track
+        self.dc = dc
         self.holistic = mp_holistic.Holistic(min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
         self.prevTime = time.time()
         self.starttime1 = time.time()
+        self.skipFrames = True
         self.realFPS = 0
         self.prevGoodFrame = None
         self.frameCount = 0
         self.prevFrameCount = 0
         self.frameProcessedCount = 0
+
+        self.last_word = "stop"
 
     async def recv(self):
         global infoColor
@@ -57,6 +62,16 @@ class VideoTransformTrack(MediaStreamTrack):
 
         timer = cv2.getTickCount()
         # perform edge detection
+
+        if self.skipFrames:
+            while not self.track._queue.empty():
+                frame = await self.track.recv()
+                self.frameCount = self.frameCount + 1
+
+        self.frameProcessedCount = self.frameProcessedCount + 1
+
+        timer = cv2.getTickCount()
+
         try:
             img = frame.to_ndarray(format="bgr24")
 
@@ -68,7 +83,7 @@ class VideoTransformTrack(MediaStreamTrack):
             x = w // 3
 
             image, results = media.mediapipe_detection(img, self.holistic)
-            print(results)
+            # (results)
 
             timeVal = str(timer)
             y1 = y
@@ -84,7 +99,6 @@ class VideoTransformTrack(MediaStreamTrack):
                             cv2.FONT_HERSHEY_SIMPLEX,
                             0.75, infoColor, 2)
 
-
                 # Calculate Frames per second (FPS)
                 fps = cv2.getTickFrequency() / (cv2.getTickCount() - timer)
 
@@ -96,13 +110,13 @@ class VideoTransformTrack(MediaStreamTrack):
 
                 #         img = cv2.resize(img,(cols//3, rows//3))
 
-                print(int(fps))
-                print(str(int(self.realFPS)))
+                # print(int(fps))
+                # print(str(int(self.realFPS)))
 
             delta = time.time() - self.prevTime
             if delta > 1:
                 self.realFPS = (self.frameCount - self.prevFrameCount) / delta
-                print(fps, self.realFPS, img.shape, timeVal)
+                # print(fps, self.realFPS, img.shape, timeVal)
                 self.prevFrameCount = self.frameCount
                 self.prevTime = time.time()
                 if infoColor == infoColor1:
@@ -111,7 +125,7 @@ class VideoTransformTrack(MediaStreamTrack):
                     infoColor = infoColor1
 
             try:
-                media.draw_styled_landmarks(img,results)
+                media.draw_styled_landmarks(img, results)
                 new_frame = VideoFrame.from_ndarray(img, format="bgr24")
                 self.prevGoodFrame = new_frame
             except Exception as e:
@@ -127,8 +141,21 @@ class VideoTransformTrack(MediaStreamTrack):
             print("RaceOSSDC", e1)
             pass
 
+        if self.last_word == "stop":
+            phraseInitiale = ["lui", "manger", "lentement", "lui"]
+            structurePhrase = StructurePhrase()
+            structurePhrase = structurePhrase.traduire(phraseInitiale)
+            # debug
+            if self.dc.readyState == "open":
+                print(str(structurePhrase))
+                try:
+                    self.dc.send(str(structurePhrase))
+                except Exception as e1:
+                    print(e1)
+            self.last_word = ""
         return new_frame
 
+        """
         img = frame.to_ndarray(format="bgr24")
         img = cv2.cvtColor(cv2.Canny(img, 100, 200), cv2.COLOR_GRAY2BGR)
 
@@ -137,6 +164,7 @@ class VideoTransformTrack(MediaStreamTrack):
         new_frame.pts = frame.pts
         new_frame.time_base = frame.time_base
         return new_frame
+        """
 
 
 async def offer(request):
@@ -160,6 +188,14 @@ async def offer(request):
     # else:
     #    recorder = MediaBlackhole()
 
+    dc = pc.createDataChannel('chat')
+
+    @dc.on("open")
+    def say_hello():
+        print("dc is open")
+        if dc.readyState == "open":
+            dc.send("hello")
+
     @pc.on("datachannel")
     def on_datachannel(channel):
         @channel.on("message")
@@ -182,7 +218,7 @@ async def offer(request):
             recorder.addTrack(track)
         elif track.kind == "video":
             local_video = VideoTransformTrack(
-                track
+                track, dc
             )
             pc.addTrack(local_video)
 

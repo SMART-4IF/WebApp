@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-
+{% load tailwind_tags %}
 {% load static %}
 
 <html>
 <head>
     <meta charset="UTF-8">
-    <title> Live video stream </title>
+    <title> Visioconférence </title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
-
+    {% tailwind_css %}
     <!-- TODO:: Faire ça propre -->
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
 
@@ -15,7 +15,9 @@
 </head>
 <body>
 
-<!-- MODAL -->
+
+
+<!--
 <div class="container mx-auto p-6 text-center">
 
   <div id="modal" class="mt-6" x-data="{ open: true }">
@@ -33,40 +35,113 @@
                 <input id="password">
             {% endif %}
             <span id="error"> </span>
-          <button id="btn-join">Join Room</button>
+          <button id="btn-join">Rejoindre la salle</button>
         </div>
       </div>
     </div>
   </div>
 </div>
-<h3 id="label-username">USERNAME</h3>
+-->
 
 
-<div class="main-grid-container">
-    <div id="video-container">
+<div id="modal" class="mt-6" x-data="{ open: true }">
+  <div class="flex justify-center" x-show="open">
+    <div class="rounded-lg shadow-lg bg-white max-w-sm absolute top-1/2" style="transform: translateY(-50%);" >
+      <a href="#!">
+        <img class="rounded-t-lg w-full" src="{% static 'rejoindreSalon.png' %}" alt=""/>
+      </a>
+      <div class="p-6">
+        <h5 class="text-gray-900 text-xl font-medium mb-2">Vous allez rejoindre un salon</h5>
+        <p class="text-gray-700 text-base mb-4">
+          Choissisez votre nom d'utilisateur avant d'entrer dans le salon. C'est à l'aide de ce dernier que les autres utilisateurs vous reconnaitrons. 
+        </p>
+        
         <div>
-            <video id="local-video" style="float: left;" autoplay playsinline></video>
+          <h1> Nom d'utilisateur :</h1>
+          <input id="username" class="border border-black py-2 px-3 my-2 w-full">
+            {% if password == 1 %}
+                <h2 class="mt-2"> Entrez le mot de passe du salon :</h2>
+                <input id="password" class="border border-black py-2 px-3 my-2 w-full">
+            {% endif %}
+            <span id="error"> </span>
+            <div>
+                <button id="btn-join" class="inline-block mt-4 px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Rejoindre la salle</button>
+                <a href="{% url 'visio_menu' %} " class="ml-2">
+                    <button type="button" class=" inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Quitter</button>
+                </a>
+            </div>
         </div>
-        <button id="btn-toggle-audio">Audio Mute</button>
-        <button id="btn-toggle-video">Video off</button>
-    </div>
 
-    <div id="chat">
-        <h3> CHAT</h3>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="grid grid-cols-5 gap-3" id="visio" x-data="{ open2: false }">
+ 
+  
+
+  <div id="video-container" x-show="open2" class="bg-red-100 col-span-4">
+    <h3 x-show="open2" >Vous êtes connecté sous le nom de</h3>
+    <h2 id="label-username" x-show="open2" >USERNAME</h2>
+   
+      <div>
+          <video id="local-video" class="w-full h-full top-0" style="transform: scale(-1, 1); -webkit-transform: scale(-1, 1);" autoplay playsinline></video>
+      </div>
+    
+    <button id="btn-toggle-audio">Audio Mute</button>
+    <button id="btn-toggle-video">Video off</button>
+  </div>
+
+  
+  
+  <!--
+  <div id="chat" x-show="open2">
+      <h3> CHAT</h3>
+      <div id="messages">
+          <ul id="message-list"></ul>
+      </div>
+
+      <div>
+          <input id="msg">
+          <button id="btn-send">Envoyer</button>
+      </div>
+  </div>
+-->
+
+<div id="chat" x-show="open2" class="bg-blue-100">
+  <div class="flex justify-center">
+    <div class="block rounded-lg shadow-lg bg-white max-w-sm text-center">
+      <div class="py-3 px-6 border-b border-gray-300">
+        Messagerie instantannée
+      </div>
+      <div class="p-6">
+        <p class="text-gray-700 text-base mb-4">
+          Vous pouvez communiquer par écrit avec l'ensemble des participants.
+        </p>
         <div id="messages">
-            <ul id="message-list"></ul>
-        </div>
-
-        <div>
-            <input id="msg">
-            <button id="btn-send">Send msg</button>
-        </div>
+          <ul id="message-list"></ul>
+      </div>
+        <input id="msg" class="border-b border-gray-300">
+        <button id="btn-send" type="button" class=" inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Envoyer</button>
+      </div>
     </div>
+  </div>
+</div>
+
+
+
 </div>
 
 <div>
-    <a href="{% url 'visio_menu' %}">Quitter</a>
+<a href="{% url 'visio_menu' %} " class="absolute bottom-0 right-0 h-300 w-300">
+    <button type="button" class=" inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Quitter</button>
+</a>
 </div>
+
+
+
 {% csrf_token %}
 {{ room_uuid|json_script:"room_uuid" }}
 <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
