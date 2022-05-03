@@ -305,9 +305,7 @@ async def offer(request):
     def say_hello():
         print("dc is open")
         if dc.readyState == "open":
-            dc.send("hello")
-            for i in range(0, 15):
-                dc.send("BYE")
+            dc.send("Sign detection ON")
 
     @pc.on("datachannel")
     def on_datachannel(channel):

@@ -1,15 +1,19 @@
 <!-- templates/home.html-->
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Home{% endblock %}
 
 {% block content %}
 {% include 'components/navbar.html' %}
-{% if user.is_authenticated %}
-  Hi {{ user.username }}!
-  <p><a href="{% url 'logout' %}">Log Out</a></p>
-{% else %}
-  <p>You are not logged in</p>
-  <a href="{% url 'login' %}">Log In</a>
-{% endif %}
+
+<div id="baniere" class="mt-44 flex mx-44 items-center">
+  <div class="w-2/3 mr-20">
+      <h1 class="text-gray-900 text-2xl font-semibold uppercase">Bobby: l'outil pour inclure les personnes muettes et malentendantes</h1>
+      <div class="text-gray-700 text-lg mt-2">Découvrez Bobby, l’intelligence artificielle capable de comprendre la LSF et d’assurer la traduction entre les personnes entendantes et les personnes signantes.</div>
+  </div>
+  <img class="w-1/3" src="{% static 'creerSalon.png' %}" alt=""/>
+</div>
+
 {% endblock %}
+

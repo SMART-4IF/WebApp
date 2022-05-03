@@ -177,8 +177,8 @@ function activateServerSideConnection() {
             sdpSemantics: 'unified-plan'
         };
 
-        config.iceServers = [{urls: ['stun:stun.l.google.com:19302']}];
-
+        //config.iceServers = [{urls: ['stun:stun.l.google.com:19302']}];
+        config.iceServers = [{urls: ['stun:race.ossdc.org:5349']}];
 
         pc = new RTCPeerConnection(config);
 
@@ -272,12 +272,15 @@ function activateServerSideConnection() {
         console.log('- close\n');
     };
     dc.onopen = function () {
-       console.log('- open\n');
+        console.log('- open\n');
         var message = 'ping ' + current_stamp();
         console.log('> ' + message + '\n');
         dc.send(message);
     };
-    dc.addEventListener('message', dcOnMessage);
+    dc.onmessage = function (e) {
+        console.log(e.data)
+    }
+
 
     pc.ondatachannel = function (event) {
         var channel = event.channel;
@@ -285,7 +288,26 @@ function activateServerSideConnection() {
             console.log('- open\n');
             channel.send('Hi back!');
         }
-        channel.addEventListener('message', dcOnMessage);
+        channel.onmessage = function (event) {
+            if (event.data !== "Sign detection ON") {
+                var data = {}
+                data.data = "Me: " + event.data;
+                //console.log(data)
+                dcOnMessage(data)
+                var dataChannels = getDataChannels();
+
+                message = user + ': ' + event.data
+
+                for (index in dataChannels) {
+                    if (dataChannels[index].readyState === "open") {
+                        dataChannels[index].send(message);
+                    }
+                }
+            } else {
+                console.log(event.data)
+            }
+
+        }
     }
 
     navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
@@ -319,9 +341,9 @@ var userMedia = navigator.mediaDevices.getUserMedia(constraints)
             audioTracks[0].enabled = !audioTracks[0].enabled
 
             if (audioTracks[0].enabled) {
-                btnToggleAudio.innerHTML = 'Audio Mute';
+                btnToggleAudio.innerHTML = '<span class="material-symbols-outlined">mic</span>';
             } else {
-                btnToggleAudio.innerHTML = 'Audio unMute'
+                btnToggleAudio.innerHTML = '<span class="material-symbols-outlined">mic_off</span>'
             }
         })
 
@@ -329,9 +351,9 @@ var userMedia = navigator.mediaDevices.getUserMedia(constraints)
             videoTracks[0].enabled = !videoTracks[0].enabled
 
             if (videoTracks[0].enabled) {
-                btnToggleVideo.innerHTML = 'Video Off';
+                btnToggleVideo.innerHTML = '<span class="material-symbols-outlined">videocam</span>';
             } else {
-                btnToggleVideo.innerHTML = 'Video On'
+                btnToggleVideo.innerHTML = '<span class="material-symbols-outlined">videocam_off</span>'
             }
         })
     })
@@ -359,7 +381,9 @@ function sendMessageOnClick(event) {
     message = user + ': ' + message
 
     for (index in dataChannels) {
-        dataChannels[index].send(message);
+        if (dataChannels[index].readyState === "open") {
+            dataChannels[index].send(message);
+        }
     }
 
     messageInput.value = '';
@@ -377,7 +401,8 @@ function sendSignal(action, message) {
 }
 
 function createOfferer(peerUsername, receiver_channel_name) {
-    const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
+    //const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
+    const configuration = {'iceServers': [{'urls': 'stun:race.ossdc.org:5349'}]}
     var peer = new RTCPeerConnection(configuration)
 
     addLocalTracks(peer);
@@ -428,7 +453,8 @@ function createOfferer(peerUsername, receiver_channel_name) {
 }
 
 function createAnswerer(offer, peerUsername, receiver_channel_name) {
-    const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
+    //const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
+    const configuration = {'iceServers': [{'urls': 'stun:race.ossdc.org:5349'}]}
     var peer = new RTCPeerConnection(configuration)
 
     addLocalTracks(peer);
@@ -497,25 +523,37 @@ function addLocalTracks(peer) {
 
 function dcOnMessage(event) {
     var message = event.data;
+    if (message !== "Me: Sign detection ON") {
+        var li = document.createElement('li');
+        li.appendChild(document.createTextNode(message));
+        messageList.appendChild(li);
+    }
 
-    var li = document.createElement('li');
-    li.appendChild(document.createTextNode(message));
-    messageList.appendChild(li);
 }
 
 function createVideo(peerUsername) {
     var videoContainer = document.querySelector('#video-container');
+
 
     var remoteVideo = document.createElement('video');
 
     remoteVideo.id = peerUsername + '-video';
     remoteVideo.autoplay = true;
     remoteVideo.playsInline = true;
+    remoteVideo.style = "transform: scale(-1, 1); -webkit-transform: scale(-1, 1);"
 
     var videoWrapper = document.createElement('div');
+    videoWrapper.className = "relative max-w-full min-w-lg"
 
     videoContainer.appendChild(videoWrapper);
 
+    var header = document.createElement('h2')
+    header.id = peerUsername + '-label-username'
+    header.className = "absolute text-white bg-black z-10 px-5 py-2 rounded-md top-4 left-4"
+    header.style = "background-color: rgba(30,30,30, 0.7)"
+    header.textContent = peerUsername
+
+    videoWrapper.appendChild(header)
     videoWrapper.appendChild(remoteVideo);
 
     return remoteVideo;

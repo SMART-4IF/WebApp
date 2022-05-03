@@ -112,32 +112,32 @@ var dataChannelLog = document.getElementById('data-channel')
 dc = pc.createDataChannel('chat', parameters);
 dc.onclose = function () {
     clearInterval(dcInterval);
-    dataChannelLog.textContent += '- close\n';
+    console.log('- close\n');
 };
 dc.onopen = function () {
-    dataChannelLog.textContent += '- open\n';
+    console.log('- open\n');
         var message = 'ping ' + current_stamp();
-        dataChannelLog.textContent += '> ' + message + '\n';
+         console.log(message + '\n');
         dc.send(message);
 };
 dc.onmessage = function (evt) {
-    dataChannelLog.textContent += '< ' + evt.data + '\n';
+    console.log('< ' + evt.data + '\n');
 
     if (evt.data.substring(0, 4) === 'pong') {
         var elapsed_ms = current_stamp() - parseInt(evt.data.substring(5), 10);
-        dataChannelLog.textContent += ' RTT ' + elapsed_ms + ' ms\n';
+        //dataChannelLog.textContent += ' RTT ' + elapsed_ms + ' ms\n';
     }
 };
 
 pc.ondatachannel = function(event) {
   var channel = event.channel;
     channel.onopen = function(event) {
-        dataChannelLog.textContent += '- open\n';
+        console.log('- open\n');
     channel.send('Hi back!');
   }
   channel.onmessage = function(event) {
     console.log(event.data);
-    dataChannelLog.textContent += '< ' + event.data + '\n';
+    dataChannelLog.textContent += event.data + '\n';
 
   }
 }
