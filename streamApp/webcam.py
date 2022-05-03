@@ -11,6 +11,8 @@ import time
 import cv2
 from av import VideoFrame
 
+from google.cloud import speech
+
 from aiortc import MediaStreamTrack, RTCPeerConnection, RTCSessionDescription
 from aiortc.contrib.media import MediaBlackhole, MediaPlayer, MediaRecorder
 from django.http import HttpResponse
@@ -19,6 +21,7 @@ from streamApp import media
 from streamApp.media import mp_holistic
 
 from streamApp.Grammar.traitementGrammaire import StructurePhrase
+from streamApp.streamRecog import MicrophoneStream, listen_print_loop, get_speaker
 
 logger = logging.getLogger("pc")
 pcs = set()
@@ -167,6 +170,114 @@ class VideoTransformTrack(MediaStreamTrack):
         """
 
 
+class AudioTransformTrack(MediaStreamTrack):
+    """
+       An audio stream track that transforms frames from an another track.
+    """
+
+    kind = "audio"
+
+    def __init__(self, track, dc):
+        super().__init__()  # don't forget this!
+        self.track = track
+        self.dc = dc
+        self.rate = 48000
+        self.chunk = int(self.rate/10)
+        self.language_code = "fr-FR"
+        self.client = speech.SpeechClient()
+        self.diarization_config = speech.SpeakerDiarizationConfig(
+            enable_speaker_diarization=True,
+            min_speaker_count=1,
+            max_speaker_count=2,
+        )
+        self.config = speech.RecognitionConfig(
+            encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+            sample_rate_hertz=self.rate,
+            language_code= self.language_code,
+            diarization_config= self.diarization_config,
+            enable_word_time_offsets=True
+        )
+        self.streaming_config = speech.StreamingRecognitionConfig(
+            config=self.config,
+            interim_results=True
+        )
+
+    async def recv(self):
+        frame = await self.track.recv()
+        print("RECV AUDIO")
+        print(self.dc.readyState)
+        if self.dc.readyState == "open":
+            try:
+                self.dc.send("Here SOB")
+                self.dc.close()
+            except Exception as e:
+                print(e)
+        print("Here")
+        with MicrophoneStream(self.rate, self.chunk) as stream:
+            audio_generator = stream.generator()
+
+            requests = (
+                speech.StreamingRecognizeRequest(audio_content=content)
+                for content in audio_generator
+            )
+
+            try:
+                responses = self.client.streaming_recognize(self.streaming_config, requests)
+                # Now, put the transcription responses to use.
+                self.send_responses(responses)
+                # listen_print_loop(responses)
+            except:
+                return
+
+        return frame
+
+    def send_responses(self, responses):
+        num_chars_printed = 0
+        speaker_tag = -1
+        for response in responses:
+
+            if not response.results:
+                continue
+
+            # The `results` list is consecutive. For streaming, we only care about
+            # the first result being considered, since once it's `is_final`, it
+            # moves on to considering the next utterance.
+
+            # Display the transcription of the top alternative.
+            result = response.results[0]
+
+            if not result.alternatives:
+                continue
+
+            alternative = result.alternatives[0]
+            transcript = get_speaker(alternative) + alternative.transcript
+
+            # transcript = get_transcript(result.alternatives[0], None)
+
+            # Display interim results, but with a carriage return at the end of the
+            # line, so subsequent lines will overwrite them.
+            #
+            # If the previous result was longer than this one, we need to print
+            # some extra spaces to overwrite the previous result
+
+            overwrite_chars = " " * (num_chars_printed - len(transcript))
+            if not result.is_final:
+                if self.dc.readyState == "open":
+                    try:
+                        # print("Here SOB")
+                        self.dc.send(str(transcript))  # + "\r"
+                        self.dc._RTCDataChannel__transport._data_channel_flush()
+                        self.dc._RTCDataChannel__transport._transmit()
+                        # self.dc.send(str(transcript + overwrite_chars + "\r"))  # + "\r"
+                    except Exception as e1:
+                        print(e1)
+                # sys.stdout.flush()
+                num_chars_printed = len(transcript)
+            else:
+                self.dc.send(transcript + overwrite_chars)
+                num_chars_printed = 0
+
+
 async def offer(request):
     params = json.loads(request.body)
     offer = RTCSessionDescription(sdp=params["sdp"], type=params["type"])
@@ -180,8 +291,8 @@ async def offer(request):
 
     log_info("Created for %s", request.META['REMOTE_HOST'])
 
-    # TODO: interface speeech to text IA
-    recorder = MediaBlackhole()
+    # TODO: interface speech to text IA
+    # recorder = MediaBlackhole()
 
     # if args.write_audio:
     #    recorder = MediaRecorder(args.write_audio)
@@ -195,6 +306,8 @@ async def offer(request):
         print("dc is open")
         if dc.readyState == "open":
             dc.send("hello")
+            for i in range(0, 15):
+                dc.send("BYE")
 
     @pc.on("datachannel")
     def on_datachannel(channel):
@@ -215,7 +328,9 @@ async def offer(request):
         log_info("Track %s received", track.kind)
 
         if track.kind == "audio":
-            recorder.addTrack(track)
+            # recorder.addTrack(track)
+            local_audio = AudioTransformTrack(track, dc)
+            pc.addTrack(local_audio)
         elif track.kind == "video":
             local_video = VideoTransformTrack(
                 track, dc
@@ -225,11 +340,11 @@ async def offer(request):
         @track.on("ended")
         async def on_ended():
             log_info("Track %s ended", track.kind)
-            await recorder.stop()
+            # await recorder.stop()
 
     # handle offer
     await pc.setRemoteDescription(offer)
-    await recorder.start()
+    # await recorder.start()
 
     # send answer
     answer = await pc.createAnswer()
