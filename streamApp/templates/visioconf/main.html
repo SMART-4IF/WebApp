@@ -44,7 +44,7 @@
 -->
 
 
-<div id="modal" class="mt-6" x-data="{ open: true }">
+<div id="modal" x-data="{ open: true }">
   <div class="flex justify-center" x-show="open">
     <div class="rounded-lg shadow-lg bg-white max-w-sm absolute top-1/2" style="transform: translateY(-50%);" >
       <a href="#!">
@@ -78,66 +78,37 @@
 </div>
 
 
-<div class="grid grid-cols-5 gap-3" id="visio" x-data="{ open2: false }">
- 
-  
+<div class="w-full flex" id="visio" x-data="{ open2: false }">
+    <div class="w-3/4 relative">
+        <div id="video-container" x-show="open2" class="flex flex-wrap h-5/6">
+          <div class="relative max-w-full min-w-lg">
+              <h2 id="label-username" x-show="open2" class="absolute text-white bg-black z-10 px-5 py-2 rounded-md top-4 left-4" style="background-color: rgba(30,30,30, 0.7)">Prenom</h2>
+              <video id="local-video" style="transform: scale(-1, 1); -webkit-transform: scale(-1, 1);" autoplay playsinline></video>
+          </div>
+        </div>
+        <div class="w-1/2 mx-auto justify-center flex space-x-4 mt-auto absolute bottom-6 left-1/2" style="transform: translateX(-50%);" x-show="open2">
+            <button id="btn-toggle-audio" class="block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Audio Mute</button>
+            <button id="btn-toggle-video" class="block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Video off</button>
+            <a href="{% url 'visio_menu' %} " class="">
+                <button type="button" class="block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Quitter</button>
+            </a>
+        </div>
+    </div>
 
-  <div id="video-container" x-show="open2" class="bg-red-100 col-span-4">
-    <h3 x-show="open2" >Vous êtes connecté sous le nom de</h3>
-    <h2 id="label-username" x-show="open2" >USERNAME</h2>
-   
-      <div>
-          <video id="local-video" class="w-full h-full top-0" style="transform: scale(-1, 1); -webkit-transform: scale(-1, 1);" autoplay playsinline></video>
-      </div>
-    
-    <button id="btn-toggle-audio">Audio Mute</button>
-    <button id="btn-toggle-video">Video off</button>
-  </div>
-
-  
-  
-  <!--
-  <div id="chat" x-show="open2">
-      <h3> CHAT</h3>
-      <div id="messages">
-          <ul id="message-list"></ul>
-      </div>
-
-      <div>
-          <input id="msg">
-          <button id="btn-send">Envoyer</button>
-      </div>
-  </div>
--->
-
-<div id="chat" x-show="open2" class="bg-blue-100">
-  <div class="flex justify-center">
-    <div class="block rounded-lg shadow-lg bg-white max-w-sm text-center">
-      <div class="py-3 px-6 border-b border-gray-300">
+    <div id="chat" x-show="open2" class="w-1/4 h-screen justify-center text-center bg-white flex flex-col">
+        <div class="py-3 px-6 border-b border-gray-300">
         Messagerie instantannée
-      </div>
-      <div class="p-6">
-        <p class="text-gray-700 text-base mb-4">
+        </div>
+        <p class="text-gray-700 text-base my-4 block">
           Vous pouvez communiquer par écrit avec l'ensemble des participants.
         </p>
-        <div id="messages">
+        <div id="messages" class="text-left flex-1 my-4 block mx-6">
           <ul id="message-list"></ul>
-      </div>
-        <input id="msg" class="border-b border-gray-300">
-        <button id="btn-send" type="button" class=" inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Envoyer</button>
-      </div>
+        </div>
+        <textarea id="msg" class="border border-black py-2 px-3 my-2 block mx-6" rows="3"></textarea>
+        <button id="btn-send" type="button" class="block mx-auto mb-6 mt-4 px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Envoyer</button>
     </div>
-  </div>
-</div>
 
-
-
-</div>
-
-<div>
-<a href="{% url 'visio_menu' %} " class="absolute bottom-0 right-0 h-300 w-300">
-    <button type="button" class=" inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out">Quitter</button>
-</a>
 </div>
 
 
