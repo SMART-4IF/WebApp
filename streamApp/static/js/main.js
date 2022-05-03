@@ -272,12 +272,15 @@ function activateServerSideConnection() {
         console.log('- close\n');
     };
     dc.onopen = function () {
-       console.log('- open\n');
+        console.log('- open\n');
         var message = 'ping ' + current_stamp();
         console.log('> ' + message + '\n');
         dc.send(message);
     };
-    dc.addEventListener('message', dcOnMessage);
+    dc.onmessage = function (e) {
+        console.log(e.data)
+    }
+
 
     pc.ondatachannel = function (event) {
         var channel = event.channel;
@@ -285,7 +288,24 @@ function activateServerSideConnection() {
             console.log('- open\n');
             channel.send('Hi back!');
         }
-        channel.addEventListener('message', dcOnMessage);
+        channel.onmessage = function (event) {
+            if (event.data !== "Sign detection ON") {
+                var data = {}
+                data.data = "Me: " + event.data;
+                //console.log(data)
+                dcOnMessage(data)
+                var dataChannels = getDataChannels();
+
+                message = user + ': ' + event.data
+
+                for (index in dataChannels) {
+                    dataChannels[index].send(message);
+                }
+            } else {
+                console.log(event.data)
+            }
+
+        }
     }
 
     navigator.mediaDevices.getUserMedia(constraints).then(function (stream) {
@@ -319,9 +339,9 @@ var userMedia = navigator.mediaDevices.getUserMedia(constraints)
             audioTracks[0].enabled = !audioTracks[0].enabled
 
             if (audioTracks[0].enabled) {
-                btnToggleAudio.innerHTML = 'Audio Mute';
+                btnToggleAudio.innerHTML = '<span class="material-symbols-outlined">mic</span>';
             } else {
-                btnToggleAudio.innerHTML = 'Audio unMute'
+                btnToggleAudio.innerHTML = '<span class="material-symbols-outlined">mic_off</span>'
             }
         })
 
@@ -329,9 +349,9 @@ var userMedia = navigator.mediaDevices.getUserMedia(constraints)
             videoTracks[0].enabled = !videoTracks[0].enabled
 
             if (videoTracks[0].enabled) {
-                btnToggleVideo.innerHTML = 'Video Off';
+                btnToggleVideo.innerHTML = '<span class="material-symbols-outlined">videocam</span>';
             } else {
-                btnToggleVideo.innerHTML = 'Video On'
+                btnToggleVideo.innerHTML = '<span class="material-symbols-outlined">videocam_off</span>'
             }
         })
     })
@@ -497,10 +517,12 @@ function addLocalTracks(peer) {
 
 function dcOnMessage(event) {
     var message = event.data;
+    if (message !== "Me: Sign detection ON") {
+        var li = document.createElement('li');
+        li.appendChild(document.createTextNode(message));
+        messageList.appendChild(li);
+    }
 
-    var li = document.createElement('li');
-    li.appendChild(document.createTextNode(message));
-    messageList.appendChild(li);
 }
 
 function createVideo(peerUsername) {
