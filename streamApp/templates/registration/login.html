@@ -1,11 +1,12 @@
 <!-- templates/registration/login.html -->
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Login{% endblock %}
 
 {% block content %}
 <form method="post" class="w-96 mx-auto block my-20 rounded-lg shadow-lg">
-<img class="rounded-t-lg" src="https://mdbootstrap.com/img/new/standard/nature/184.jpg" alt=""/>
+<img class="rounded-t-lg w-full" src="{% static 'login.png' %}" alt=""/>
 <h2 class="text-gray-900 text-xl font-medium mx-6 mt-6 mb-4">Qui êtes-vous ?</h2>
   {% csrf_token %}
     {% for field in form %}

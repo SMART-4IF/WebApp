@@ -9,12 +9,12 @@
 </head>
 <body>
 {% include 'components/navbar.html' %}
-<h1 class="text-gray-900 text-4xl text-center font-medium mt-16 mb-4"> Visioconférence </h1>
-<h3 class="text-gray-900 text-2xl text-center font-light mt-6 mb-12 w-2/3 mx-auto block"> Bienvenue dans votre espace de visioconférences. Pour converser avec vos amis, veuillez créer un salon ou en rejoindre un existant. </h3>
+<h1 class="text-gray-900 text-3xl text-center font-medium mt-28 mb-4"> Visioconférence </h1>
+<h3 class="text-gray-900 text-xl text-center font-light mt-6 mb-10 w-1/2 mx-auto block"> Bienvenue dans votre espace de visioconférences. Pour converser avec vos amis, veuillez créer un salon ou en rejoindre un existant. </h3>
 
 <div class="flex place-content-evenly w-full px-20">
     <div class="w-1/3 rounded-lg shadow-lg flex flex-col">
-        <img class="rounded-t-lg h-40 object-cover" src="https://mdbootstrap.com/img/new/standard/nature/184.jpg" alt=""/>
+        <img class="rounded-t-lg" src="{% static 'creerSalon.png' %}" alt=""/>
         {{ uuid|json_script:"uuid" }}
         <h2 class="text-gray-900 text-xl font-medium mx-6 mt-6 mb-4"> Créer un salon </h2>
         <div class="mx-6 text-gray-700 text-base">Identifiant : </div>
@@ -27,7 +27,7 @@
         <span id="error"> </span>
     </div>
     <div class="w-1/3 rounded-lg shadow-lg flex flex-col">
-        <img class="rounded-t-lg h-40 object-cover" src="https://mdbootstrap.com/img/new/standard/nature/184.jpg" alt=""/>
+        <img class="rounded-t-lg" src="{% static 'rejoindreSalon.png' %}" alt=""/>
         <h2 class="text-gray-900 text-xl font-medium mx-6 mt-6 mb-4"> Rejoindre un salon </h2>
         <div class="mx-6 text-gray-700 text-base"> Identifiant du salon : </div>
         <input id="room_name" class="border border-black mx-6 py-2 px-3 my-2"> <br>

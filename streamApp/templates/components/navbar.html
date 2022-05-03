@@ -2,7 +2,9 @@
 <!-- templates/components/navbar.html-->
 <ul>
   <nav class="
-  relative
+  absolute
+  top-0
+  z-10
   w-full
   flex flex-wrap
   items-center
@@ -20,7 +22,7 @@
   <li><a href="{% url 'index' %}">Accueil</a></li>
   <li><a href="{% url 'visio_menu' %}">Visioconference</a></li>
   <li><a href="{% url 'local_chat' %}">Conversation de groupe</a></li>
-  <li><a href="{% url 'learn_lsf' %}">Apprendre la langue des signes</a></li>
+  <li><a href="{% url 'learn_lsf' %}">Apprendre la LSF</a></li>
   <li><a href="{% url 'about' %}">A propos</a></li>
 {% if user.is_authenticated %}
       <li><a href="{% url 'logout' %}">Se deconnecter</a></li>

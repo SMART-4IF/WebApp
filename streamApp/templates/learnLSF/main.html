@@ -6,37 +6,20 @@
 {% block content %}
     {% include 'components/navbar.html' %}
     {% if user.is_authenticated %}
-        <h1>TODO</h1>
         <div id="media">
-            <h2>Media</h2>
-            <div class="main-grid-container">
-                <div id="video-container">
-                    <div>
-                        <video id="video"
-                               style="float: left;  transform: scale(-1, 1); -webkit-transform: scale(-1, 1);" autoplay
-                               playsinline></video>
-                    </div>
-
-                    <!--<div>
-                        <video id="video2"
-                               style="float: left;"
-                               autoplay playsinline></video>
-                    </div>-->
-
-                </div>
-
-
+            <div id="video-container" >
+                <div><video id="video" class="w-full h-full absolute top-0" style="transform: scale(-1, 1); -webkit-transform: scale(-1, 1);" autoplay playsinline></video></div>
             </div>
-
         </div>
-        <h2>Data channel</h2>
-        <pre id="data-channel" style="height: 200px;"></pre>
+        <div style="background-color: rgba(30,30,30, 0.7)" class="absolute w-3/4 z-10 bottom-10 text-white px-10 py-4 text-2xl left-0 right-0 mx-auto rounded-md">
+            Dans cette boite on peut lire ce qui a été compris par l'IA
+        </div>
+        <!-- <h2>Data channel</h2>
+        <pre id="data-channel" style="height: 200px;"></pre> -->
         {% csrf_token %}
         <script type="text/javascript" src="{% static 'js/client.js' %}"></script>
 
-
     {% else %}
-
         <p>You are not logged in</p>
         <a href="{% url 'login' %}">Log In</a>
     {% endif %}
