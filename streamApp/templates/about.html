@@ -9,100 +9,98 @@
 <body>
 {% include 'components/navbar.html' %}
 
-<div class="ml-10 mr-10">
-<h1 class="text-gray-900 text-3xl text-left font-medium mt-28 mb-4 ">  Qui sommes-nous? </h1>
-<h3 class="text-gray-900 text-xl text-left font-light mt-6 mb-10 w-2/3 mx-auto block"> Nous sommes 7 étudiants ingénieurs en informatique. Nous avons créé Bobby dans le cadre de notre dernier projet scolaire.   </h3>
+<div class="mx-52 mb-20">
+    <h1 class="text-gray-900 text-3xl text-left font-medium mt-40 mb-4">  Qui sommes-nous? </h1>
+    <div class="text-gray-900 text-xl text-left font-light mt-6 mb-10 block"> Nous sommes 7 étudiants ingénieurs en informatique. Nous avons créé Bobby dans le cadre de notre dernier projet scolaire.   </div>
 
-<div class="flex flex-wrap justify-center leading-loose">
-    <div class="text-center w-80">
-        <img
-          src={% static 'benoit.jpg' %}
-          class="rounded-full w-32 mb-4 mx-auto"
-          alt="Avatar"
-        />
-        <h5 class="text-xl font-medium leading-tight mb-2">Benoit Deléglise</h5>
-    </div>    
+    <div class="flex flex-wrap justify-center mt-20">
+        <div class="text-center w-60 mb-16">
+            <img
+              src={% static 'benoit.jpg' %}
+              class="rounded-full w-32 mb-4 mx-auto"
+              alt="Avatar"
+            />
+            <h5 class="text-xl font-medium leading-tight mb-2">Benoit Deléglise</h5>
+        </div>
 
-    <div class="text-center w-80">
-        <img
-          src={% static 'allan.jpg' %}
-          class="rounded-full w-32 mb-4 mx-auto"
-          alt="Avatar"
-        />
-        <h5 class="text-xl font-medium leading-tight mb-2">Allan Guigal</h5>
+        <div class="text-center w-60">
+            <img
+              src={% static 'allan.jpg' %}
+              class="rounded-full w-32 mb-4 mx-auto"
+              alt="Avatar"
+            />
+            <h5 class="text-xl font-medium leading-tight mb-2">Allan Guigal</h5>
+        </div>
+
+        <div class="text-center w-60">
+            <img
+              src={% static 'aurelien.jpg' %}
+              class="rounded-full w-32 mb-4 mx-auto"
+              alt="Avatar"
+            />
+            <h5 class="text-xl font-medium leading-tight mb-2">Aurélien Tournade</h5>
+        </div>
+
+        <div class="text-center w-60">
+            <img
+              src={% static 'quentin.jpg' %}
+              class="rounded-full w-32 mb-4 mx-auto"
+              alt="Avatar"
+            />
+            <h5 class="text-xl font-medium leading-tight mb-2">Quentin Marc</h5>
+        </div>
+
+        <div class="text-center w-60">
+            <img
+              src={% static 'maxime.jpg' %}
+              class="rounded-full w-32 mb-4 mx-auto"
+              alt="Avatar"
+            />
+            <h5 class="text-xl font-medium leading-tight mb-2">Maxime Boyer</h5>
+        </div>
+
+        <div class="text-center w-60">
+            <img
+              src={% static 'julien.jpg' %}
+              class="rounded-full w-32 mb-4 mx-auto"
+              alt="Avatar"
+            />
+            <h5 class="text-xl font-medium leading-tight mb-2">Julien Bouvier</h5>
+          </div>
+
+        <div class="text-center w-60">
+            <img
+              src={% static 'stella.jpg' %}
+              class="rounded-full w-32 mb-4 mx-auto"
+              alt="Avatar"
+            />
+            <h5 class="text-xl font-medium leading-tight mb-2">Stella Cristoforoni</h5>
+        </div>
+
     </div>
 
-    <div class="text-center w-80">
-        <img
-          src={% static 'aurelien.jpg' %}
-          class="rounded-full w-32 mb-4 mx-auto"
-          alt="Avatar"
-        />
-        <h5 class="text-xl font-medium leading-tight mb-2">Aurélien Tournade</h5>
+    <h1 class="text-gray-900 text-3xl text-left font-medium mt-28 mb-4"> Comment nous est venue l’idée de Bobby ? </h1>
+    <div class="text-gray-900 text-xl text-left font-light mt-6 mb-10 block">
+    Un élève de notre école est sourd et inappareillable. Il ne peut communiquer qu’à travers la langue des signes.
+    <br><br>
+    Ses proches ont appris les rudimments de la LSF pour pouvoir communiquer avec lui, mais il perd quand même une grande partie des informations dans une discussion de groupe.
+    <br><br>
+    Lors du confinément, il n’avait pas d’outils pour pouvoir suivre les cours en visio.
+    <br><br>
+    Bobby a pour but d’aider les personnes signantes à interagir avec les personnes entendantes qu’elles rencontrent dans leur quotidien.
     </div>
 
-    <div class="text-center w-80">
-        <img
-          src={% static 'quentin.jpg' %}
-          class="rounded-full w-32 mb-4 mx-auto"
-          alt="Avatar"
-        />
-        <h5 class="text-xl font-medium leading-tight mb-2">Quentin Marc</h5>
+
+    <h1 class="text-gray-900 text-3xl text-left font-medium mt-28 mb-4"> Quel futur attend Bobby ? </h1>
+    <div class="text-gray-900 text-xl text-left font-light mt-6 mb-10 block">
+        Bobby est un démonstrateur: notre projet n’était pas assez long pour nous permettre de créer un traducteur utilisable.
+        <br><br>
+        La compréhension de la LSF était encore impossible il y a quelques années car nos intelligences artificielles n’étaient pas assez performantes.
+        <br><br>
+        Grâce à Bobby, nous venons de prouver qu’aujourd’hui, c’est possible.
+        <br><br>
+        Le projet est entièrement réutilisable pour qui souhaiterait le reprendre et aller au bout. Voici le lien vers le code source de Bobby: <a href="https://github.com/SMART-4IF" class="text-blue-500 hover:underline">https://github.com/SMART-4IF</a>
     </div>
-
-    <div class="text-center w-80">
-        <img
-          src={% static 'maxime.jpg' %}
-          class="rounded-full w-32 mb-4 mx-auto"
-          alt="Avatar"
-        />
-        <h5 class="text-xl font-medium leading-tight mb-2">Maxime Boyer</h5>
-    </div>
-
-    <div class="text-center w-80">
-        <img
-          src={% static 'julien.jpg' %}
-          class="rounded-full w-32 mb-4 mx-auto"
-          alt="Avatar"
-        />
-        <h5 class="text-xl font-medium leading-tight mb-2">Julien Bouvier</h5>
-      </div>
-
-    <div class="text-center w-80">
-        <img
-          src={% static 'stella.jpg' %}
-          class="rounded-full w-32 mb-4 mx-auto"
-          alt="Avatar"
-        />
-        <h5 class="text-xl font-medium leading-tight mb-2">Stella Cristoforoni</h5>
-    </div>
-
-</div>
-
-<h1 class="text-gray-900 text-3xl text-left font-medium mt-28 mb-4"> Comment nous est venue l’idée de Bobby ? </h1>
-<h3 class="text-gray-900 text-xl text-left font-light mt-6 mb-10 w-2/3 mx-auto block">
-Un élève de notre école est sourd et inappareillable. Il ne peut communiquer qu’à travers la langue des signes.
-
-Ses proches ont appris les rudimments de la LSF pour pouvoir communiquer avec lui, mais il perd quand même une grande partie des informations dans une discussion de groupe.
-
-Lors du confinément, il n’avait pas d’outils pour pouvoir suivre les cours en visio. 
-
-Bobby a pour but d’aider les personnes signantes à interagir avec les personnes entendantes qu’elles rencontrent dans leur quotidien.
-
-</h3>
-
-
-<h1 class="text-gray-900 text-3xl text-left font-medium mt-28 mb-4"> Quel futur attend Bobby ? </h1>
-<h3 class="text-gray-900 text-xl text-left font-light mt-6 mb-10 w-2/3 mx-auto block">
-    Bobby est un démonstrateur: notre projet n’était pas assez long pour nous permettre de créer un traducteur utilisable.
-
-    La compréhension de la LSF était encore impossible il y a quelques années car nos intelligences artificielles n’étaient pas assez performantes.
-    
-    Grâce à Bobby, nous venons de prouver qu’aujourd’hui, c’est possible.
-    
-    Le projet est entièrement réutilisable pour qui souhaiterait le reprendre et aller au bout. Voici le lien vers le code source de Bobby: lien    
-
-</h3>
 </div>
 
 </body>
