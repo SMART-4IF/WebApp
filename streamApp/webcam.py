@@ -172,7 +172,7 @@ class VideoTransformTrack(MediaStreamTrack):
 kill_thread_b = False
 
 
-async def runA(client, streaming_config, dc_audio):
+async def runA(client, streaming_config, dc_audio, pc_id):
     while dc_audio.readyState != "open":
         time.sleep(.1)
 
@@ -185,7 +185,7 @@ async def runA(client, streaming_config, dc_audio):
 
         while True:
             try:
-                print("----------------started  -------------------")
+                print("----------------started  -------------------" + pc_id)
                 responses = client.streaming_recognize(streaming_config, requests)
 
                 res = listen_print_loop(responses)
@@ -197,7 +197,7 @@ async def runA(client, streaming_config, dc_audio):
                         time.sleep(.1)
                     except Exception as e1:
                         print("Error")
-                print("----------------ended-------------------")
+                print("----------------ended-------------------" + pc_id)
             except:
                 return
 
@@ -230,7 +230,7 @@ def runB(dc_audio, pc_id):
     )
 
     while True and not threads[pc_id][1]:
-        loop.run_until_complete(runA(client=client, streaming_config=streaming_config, dc_audio=dc_audio))
+        loop.run_until_complete(runA(client=client, streaming_config=streaming_config, dc_audio=dc_audio, pc_id=pc_id))
 
 
 async def offer(request):
@@ -307,8 +307,8 @@ async def offer(request):
         global threads
         print("close")
         if t2 is not None:
-            threads[pc_id][1] = True
             threads[pc_id][0].join(1)
+            threads[pc_id] = (None, True)
 
     # handle offer
     await pc.setRemoteDescription(offer)
