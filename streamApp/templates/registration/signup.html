@@ -1,21 +1,26 @@
 <!-- templates/registration/signup.html -->
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Sign Up{% endblock %}
 
 {% block content %}
-  <h2>Sign up</h2>
-  <form method="post">
+<form method="post" class="w-96 mx-auto block my-20 rounded-lg shadow-lg">
+  <img class="rounded-t-lg w-full" src="{% static 'login.png' %}" alt=""/>
+  <h2 class="text-gray-900 text-xl font-medium mx-6 mt-6 mb-4">S'inscrire</h2>
     {% csrf_token %}
     {% for field in form %}
       <p>
+        <div class="flex flex-col my-4 mx-6 text-gray-700 text-base mb-4">
         {{ field.label_tag }}<br>
         {{ field }}
         {% for error in field.errors %}
-          <p style="color: red">{{ error }}</p>
+        <p style="color: red">{{ error }}</p>
+      
         {% endfor %}
+      </div>
       </p>
     {% endfor %}
-    <button type="submit">Sign up</button>
+    <button type="submit" class="inline-block px-6 py-2.5 bg-blue-600 text-white font-medium text-xs leading-tight uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out mx-6 mb-6 mt-4">S'inscrire</button>
   </form>
 {% endblock %}
