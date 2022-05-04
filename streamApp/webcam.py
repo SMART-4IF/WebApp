@@ -11,6 +11,11 @@ import time
 import cv2
 from av import VideoFrame
 
+import threading
+from threading import Thread
+
+from google.cloud import speech
+
 from aiortc import MediaStreamTrack, RTCPeerConnection, RTCSessionDescription
 from aiortc.contrib.media import MediaBlackhole, MediaPlayer, MediaRecorder
 from django.http import HttpResponse
@@ -19,6 +24,7 @@ from streamApp import media
 from streamApp.media import mp_holistic
 
 from streamApp.Grammar.traitementGrammaire import StructurePhrase
+from streamApp.streamRecog import MicrophoneStream, listen_print_loop, get_speaker
 
 logger = logging.getLogger("pc")
 pcs = set()
@@ -26,6 +32,8 @@ pcs = set()
 infoColor1 = (0, 255, 0)
 infoColor2 = (0, 255, 255)
 infoColor = infoColor1
+
+mutex = threading.Lock()
 
 
 class VideoTransformTrack(MediaStreamTrack):
@@ -54,6 +62,7 @@ class VideoTransformTrack(MediaStreamTrack):
 
     async def recv(self):
         global infoColor
+        # print("recv")
         # TODO: interface LSFIA
         frame = await self.track.recv()
         new_frame = frame
@@ -149,25 +158,80 @@ class VideoTransformTrack(MediaStreamTrack):
             if self.dc.readyState == "open":
                 print(str(structurePhrase))
                 try:
+                    mutex.acquire()
                     self.dc.send(str(structurePhrase))
+                    mutex.release()
+                    time.sleep(.1)
                 except Exception as e1:
                     print(e1)
-            self.last_word = ""
+                self.last_word = ""
         return new_frame
 
-        """
-        img = frame.to_ndarray(format="bgr24")
-        img = cv2.cvtColor(cv2.Canny(img, 100, 200), cv2.COLOR_GRAY2BGR)
+kill_thread_b = False
 
-        # rebuild a VideoFrame, preserving timing information
-        new_frame = VideoFrame.from_ndarray(img, format="bgr24")
-        new_frame.pts = frame.pts
-        new_frame.time_base = frame.time_base
-        return new_frame
-        """
+async def runA(client, streaming_config, dc_audio):
+    while dc_audio.readyState != "open":
+        time.sleep(.1)
+
+    with MicrophoneStream(48000, 4800) as stream:
+        audio_generator = stream.generator()
+        requests = (
+            speech.StreamingRecognizeRequest(audio_content=content)
+            for content in audio_generator
+        )
+
+        while True:
+            try:
+                print("----------------started  -------------------")
+                responses = client.streaming_recognize(streaming_config, requests)
+
+                res = listen_print_loop(responses)
+                if dc_audio.readyState == "open":
+                    try:
+                        mutex.acquire()
+                        dc_audio.send(res)
+                        mutex.release()
+                        time.sleep(.1)
+                    except Exception as e1:
+                        print("Error")
+                print("----------------ended-------------------")
+            except:
+                return
+
+
+def runB(dc_audio):
+    global kill_thread_b
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+
+    rate = 48000
+    chunk = int(rate / 10)
+    language_code = "fr-FR"
+    client = speech.SpeechClient()
+    diarization_config = speech.SpeakerDiarizationConfig(
+        enable_speaker_diarization=True,
+        min_speaker_count=1,
+        max_speaker_count=4,
+    )
+    config = speech.RecognitionConfig(
+        encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+        sample_rate_hertz=rate,
+        language_code=language_code,
+        diarization_config=diarization_config,
+        # max_alternatives=1,
+        enable_word_time_offsets=True
+    )
+    streaming_config = speech.StreamingRecognitionConfig(
+        config=config,
+        interim_results=True
+    )
+
+    while True and not kill_thread_b:
+        loop.run_until_complete(runA(client=client, streaming_config=streaming_config, dc_audio=dc_audio))
 
 
 async def offer(request):
+    global kill_thread_b
     params = json.loads(request.body)
     offer = RTCSessionDescription(sdp=params["sdp"], type=params["type"])
 
@@ -180,8 +244,8 @@ async def offer(request):
 
     log_info("Created for %s", request.META['REMOTE_HOST'])
 
-    # TODO: interface speeech to text IA
-    recorder = MediaBlackhole()
+    # TODO: interface speech to text IA
+    # recorder = MediaBlackhole()
 
     # if args.write_audio:
     #    recorder = MediaRecorder(args.write_audio)
@@ -189,6 +253,16 @@ async def offer(request):
     #    recorder = MediaBlackhole()
 
     dc = pc.createDataChannel('chat')
+    dc_audio = pc.createDataChannel('audio')
+
+    kill_thread_b = False
+    t2 = Thread(target=runB, args=[dc_audio], daemon=True)
+
+    @dc_audio.on("open")
+    def say_hello():
+        print("dc audio is open")
+        if dc_audio.readyState == "open":
+            dc_audio.send("Audio Speech to Text ON")
 
     @dc.on("open")
     def say_hello():
@@ -215,7 +289,7 @@ async def offer(request):
         log_info("Track %s received", track.kind)
 
         if track.kind == "audio":
-            recorder.addTrack(track)
+            t2.start()
         elif track.kind == "video":
             local_video = VideoTransformTrack(
                 track, dc
@@ -225,11 +299,20 @@ async def offer(request):
         @track.on("ended")
         async def on_ended():
             log_info("Track %s ended", track.kind)
-            await recorder.stop()
+            print("ended")
+            # await recorder.stop()
+
+    @dc_audio.on("close")
+    def close():
+        global kill_thread_b
+        print("close")
+        if t2 is not None:
+            kill_thread_b = True
+            t2.join(1)
 
     # handle offer
     await pc.setRemoteDescription(offer)
-    await recorder.start()
+    # await recorder.start()
 
     # send answer
     answer = await pc.createAnswer()
