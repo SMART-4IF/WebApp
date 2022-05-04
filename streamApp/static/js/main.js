@@ -543,7 +543,7 @@ function createVideo(peerUsername) {
     remoteVideo.style = "transform: scale(-1, 1); -webkit-transform: scale(-1, 1);"
 
     var videoWrapper = document.createElement('div');
-    videoWrapper.className = "relative max-w-full min-w-lg"
+    videoWrapper.className = "relative w-1/2"
 
     videoContainer.appendChild(videoWrapper);
 
