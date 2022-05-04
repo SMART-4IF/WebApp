@@ -99,7 +99,7 @@ def get_speaker(alternative):
     return u"speaker = {} : ".format(words[0].speaker_tag)
 
 
-def listen_print_loop(responses, dc_audio):
+def listen_print_loop(responses):
     """Iterates through server responses and prints them.
 
     The responses passed is a generator that will block until a response
@@ -151,17 +151,7 @@ def listen_print_loop(responses, dc_audio):
             num_chars_printed = len(transcript)
         else:
             print(transcript + overwrite_chars)
-            return
-            if dc_audio.readyState == "open":
-                print("envoie")
-                try:
-                    print("envoie1")
-                    dc_audio.send(str(transcript + overwrite_chars))
-                    print("envoie2")
-                except Exception as e1:
-                    print("Error")
-                    print(e1)
-            num_chars_printed = 0
+            return str(transcript + overwrite_chars)
 
 
 language_code = "fr-FR"  # a BCP-47 language tag
