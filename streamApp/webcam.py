@@ -28,6 +28,7 @@ from streamApp.streamRecog import MicrophoneStream, listen_print_loop, get_speak
 
 logger = logging.getLogger("pc")
 pcs = set()
+threads = {}
 
 infoColor1 = (0, 255, 0)
 infoColor2 = (0, 255, 255)
@@ -167,7 +168,9 @@ class VideoTransformTrack(MediaStreamTrack):
                 self.last_word = ""
         return new_frame
 
+
 kill_thread_b = False
+
 
 async def runA(client, streaming_config, dc_audio):
     while dc_audio.readyState != "open":
@@ -199,8 +202,8 @@ async def runA(client, streaming_config, dc_audio):
                 return
 
 
-def runB(dc_audio):
-    global kill_thread_b
+def runB(dc_audio, pc_id):
+    global threads
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
 
@@ -226,12 +229,12 @@ def runB(dc_audio):
         interim_results=True
     )
 
-    while True and not kill_thread_b:
+    while True and not threads[pc_id][1]:
         loop.run_until_complete(runA(client=client, streaming_config=streaming_config, dc_audio=dc_audio))
 
 
 async def offer(request):
-    global kill_thread_b
+    global threads
     params = json.loads(request.body)
     offer = RTCSessionDescription(sdp=params["sdp"], type=params["type"])
 
@@ -255,20 +258,17 @@ async def offer(request):
     dc = pc.createDataChannel('chat')
     dc_audio = pc.createDataChannel('audio')
 
-    kill_thread_b = False
-    t2 = Thread(target=runB, args=[dc_audio], daemon=True)
+    t2 = Thread(target=runB, args=[dc_audio, pc_id], daemon=True)
+
+    threads[pc_id] = (t2, False)
 
     @dc_audio.on("open")
     def say_hello():
         print("dc audio is open")
-        if dc_audio.readyState == "open":
-            dc_audio.send("Audio Speech to Text ON")
 
     @dc.on("open")
     def say_hello():
         print("dc is open")
-        if dc.readyState == "open":
-            dc.send("Sign detection ON")
 
     @pc.on("datachannel")
     def on_datachannel(channel):
@@ -304,11 +304,11 @@ async def offer(request):
 
     @dc_audio.on("close")
     def close():
-        global kill_thread_b
+        global threads
         print("close")
         if t2 is not None:
-            kill_thread_b = True
-            t2.join(1)
+            threads[pc_id][1] = True
+            threads[pc_id][0].join(1)
 
     # handle offer
     await pc.setRemoteDescription(offer)
