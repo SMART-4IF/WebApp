@@ -99,7 +99,7 @@ def get_speaker(alternative):
     return u"speaker = {} : ".format(words[0].speaker_tag)
 
 
-def listen_print_loop(responses):
+def listen_print_loop(responses, dc_audio):
     """Iterates through server responses and prints them.
 
     The responses passed is a generator that will block until a response
@@ -144,12 +144,23 @@ def listen_print_loop(responses):
 
         overwrite_chars = " " * (num_chars_printed - len(transcript))
         if not result.is_final:
+
             sys.stdout.write(transcript + overwrite_chars + "\r")  # + "\r"
             sys.stdout.flush()
 
             num_chars_printed = len(transcript)
         else:
             print(transcript + overwrite_chars)
+            return
+            if dc_audio.readyState == "open":
+                print("envoie")
+                try:
+                    print("envoie1")
+                    dc_audio.send(str(transcript + overwrite_chars))
+                    print("envoie2")
+                except Exception as e1:
+                    print("Error")
+                    print(e1)
             num_chars_printed = 0
 
 

@@ -42,7 +42,7 @@ function createPeerConnection() {
     pc.addEventListener('track', function (evt) {
         console.log(evt)
         console.log(document.getElementById('video'))
-        console.log(evt.streams[0])
+        ///console.log(evt.streams[0])
         //document.getElementById('video2').srcObject = evt.streams[0];
     });
 

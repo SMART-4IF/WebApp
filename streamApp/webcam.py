@@ -11,6 +11,8 @@ import time
 import cv2
 from av import VideoFrame
 
+from threading import Thread
+
 from google.cloud import speech
 
 from aiortc import MediaStreamTrack, RTCPeerConnection, RTCSessionDescription
@@ -57,6 +59,7 @@ class VideoTransformTrack(MediaStreamTrack):
 
     async def recv(self):
         global infoColor
+        #print("recv")
         # TODO: interface LSFIA
         frame = await self.track.recv()
         new_frame = frame
@@ -155,7 +158,7 @@ class VideoTransformTrack(MediaStreamTrack):
                     self.dc.send(str(structurePhrase))
                 except Exception as e1:
                     print(e1)
-            self.last_word = ""
+                self.last_word = ""
         return new_frame
 
         """
@@ -170,115 +173,128 @@ class VideoTransformTrack(MediaStreamTrack):
         """
 
 
-class AudioTransformTrack(MediaStreamTrack):
-    """
-       An audio stream track that transforms frames from an another track.
-    """
+async def runA(client, streaming_config, dc_audio):
 
-    kind = "audio"
+    while dc_audio.readyState != "open":
+        print(dc_audio.readyState)
 
-    def __init__(self, track, dc):
-        super().__init__()  # don't forget this!
-        self.track = track
-        self.dc = dc
-        self.rate = 48000
-        self.chunk = int(self.rate/10)
-        self.language_code = "fr-FR"
-        self.client = speech.SpeechClient()
-        self.diarization_config = speech.SpeakerDiarizationConfig(
-            enable_speaker_diarization=True,
-            min_speaker_count=1,
-            max_speaker_count=2,
-        )
-        self.config = speech.RecognitionConfig(
-            encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
-            sample_rate_hertz=self.rate,
-            language_code= self.language_code,
-            diarization_config= self.diarization_config,
-            enable_word_time_offsets=True
-        )
-        self.streaming_config = speech.StreamingRecognitionConfig(
-            config=self.config,
-            interim_results=True
-        )
+    if dc_audio.readyState == "open":
+        print("envoie")
+        try:
+            print("envoie1")
+            dc_audio.send("runA  send audio")
+            print("envoie2")
+        except Exception as e1:
+            print("Error")
+            print(e1)
 
-    async def recv(self):
-        frame = await self.track.recv()
-        print("RECV AUDIO")
-        print(self.dc.readyState)
-        if self.dc.readyState == "open":
+    with MicrophoneStream(48000, 4800) as stream:
+        if dc_audio.readyState == "open":
+            print("envoie")
             try:
-                self.dc.send("Here SOB")
-                self.dc.close()
-            except Exception as e:
-                print(e)
-        print("Here")
-        with MicrophoneStream(self.rate, self.chunk) as stream:
-            audio_generator = stream.generator()
+                print("envoie1")
+                dc_audio.send("runA 2 send audio")
+                print("envoie2")
+            except Exception as e1:
+                print("Error")
+                print(e1)
+        audio_generator = stream.generator()
 
-            requests = (
-                speech.StreamingRecognizeRequest(audio_content=content)
-                for content in audio_generator
-            )
 
+        requests = (
+            speech.StreamingRecognizeRequest(audio_content=content)
+            for content in audio_generator
+        )
+
+        if dc_audio.readyState == "open":
+            print("envoie")
             try:
-                responses = self.client.streaming_recognize(self.streaming_config, requests)
-                # Now, put the transcription responses to use.
-                self.send_responses(responses)
-                # listen_print_loop(responses)
-            except:
-                return
+                print("envoie1")
+                dc_audio.send("runA 3 send audio")
+                print("envoie2")
+            except Exception as e1:
+                print("Error")
 
-        return frame
+        try:
+            if dc_audio.readyState == "open":
+                print("envoie")
+                try:
+                    print("envoie1")
+                    dc_audio.send("runA 4 send audio")
+                    print("envoie2")
+                except Exception as e1:
+                    print("Error")
+            responses = client.streaming_recognize(streaming_config, requests)
+            # Now, put the transcription responses to use.
+            # self.send_responses(responses)
+            if dc_audio.readyState == "open":
+                print("envoie RUNA 5")
+                try:
+                    print("envoie1 RUNA 5")
+                    dc_audio.send("runA 5 send audio")
+                    print("envoie2 RUNA 5")
+                except Exception as e1:
+                    print("Error")
+            listen_print_loop(responses, dc_audio)
+            print("----------------ended-------------------")
+        except:
+            return
+        if dc_audio.readyState == "open":
+            print("envoie")
+            try:
+                print("envoie1")
+                dc_audio.send("runA 6 send audio")
+                print("envoie2")
+            except Exception as e1:
+                print("Error")
 
-    def send_responses(self, responses):
-        num_chars_printed = 0
-        speaker_tag = -1
-        for response in responses:
 
-            if not response.results:
-                continue
+def runB(dc_audio):
 
-            # The `results` list is consecutive. For streaming, we only care about
-            # the first result being considered, since once it's `is_final`, it
-            # moves on to considering the next utterance.
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
 
-            # Display the transcription of the top alternative.
-            result = response.results[0]
+    while dc_audio.readyState != "open":
+        print(dc_audio.readyState)
 
-            if not result.alternatives:
-                continue
+    if dc_audio.readyState == "open":
+        print("envoie")
+        try:
+            print("envoie1")
+            dc_audio.send("runB send audio")
+            print("envoie2")
+        except Exception as e1:
+            print("Error")
+            print(e1)
 
-            alternative = result.alternatives[0]
-            transcript = get_speaker(alternative) + alternative.transcript
 
-            # transcript = get_transcript(result.alternatives[0], None)
+    rate = 48000
+    chunk = int(rate / 10)
+    language_code = "fr-FR"
+    client = speech.SpeechClient()
+    diarization_config = speech.SpeakerDiarizationConfig(
+        enable_speaker_diarization=True,
+        min_speaker_count=1,
+        max_speaker_count=2,
+    )
+    config = speech.RecognitionConfig(
+        encoding=speech.RecognitionConfig.AudioEncoding.LINEAR16,
+        sample_rate_hertz=rate,
+        language_code=language_code,
+        diarization_config=diarization_config,
+        enable_word_time_offsets=True
+    )
+    streaming_config = speech.StreamingRecognitionConfig(
+        config=config,
+        interim_results=True
+    )
 
-            # Display interim results, but with a carriage return at the end of the
-            # line, so subsequent lines will overwrite them.
-            #
-            # If the previous result was longer than this one, we need to print
-            # some extra spaces to overwrite the previous result
+    loop.run_until_complete(runA(client=client, streaming_config=streaming_config, dc_audio=dc_audio))
 
-            overwrite_chars = " " * (num_chars_printed - len(transcript))
-            if not result.is_final:
-                if self.dc.readyState == "open":
-                    try:
-                        # print("Here SOB")
-                        self.dc.send(str(transcript))  # + "\r"
-                        self.dc._RTCDataChannel__transport._data_channel_flush()
-                        self.dc._RTCDataChannel__transport._transmit()
-                        # self.dc.send(str(transcript + overwrite_chars + "\r"))  # + "\r"
-                    except Exception as e1:
-                        print(e1)
-                # sys.stdout.flush()
-                num_chars_printed = len(transcript)
-            else:
-                self.dc.send(transcript + overwrite_chars)
-                num_chars_printed = 0
 
 
 async def offer(request):
+
     params = json.loads(request.body)
     offer = RTCSessionDescription(sdp=params["sdp"], type=params["type"])
 
@@ -300,6 +316,13 @@ async def offer(request):
     #    recorder = MediaBlackhole()
 
     dc = pc.createDataChannel('chat')
+    dc_audio = pc.createDataChannel('audio')
+
+    @dc_audio.on("open")
+    def say_hello():
+        print("dc audio is open")
+        if dc_audio.readyState == "open":
+            dc_audio.send("Audio Speech to Text ON")
 
     @dc.on("open")
     def say_hello():
@@ -326,9 +349,9 @@ async def offer(request):
         log_info("Track %s received", track.kind)
 
         if track.kind == "audio":
-            # recorder.addTrack(track)
-            local_audio = AudioTransformTrack(track, dc)
-            pc.addTrack(local_audio)
+            t2 = Thread(target=runB, args=[dc_audio])
+            t2.setDaemon(True)
+            t2.start()
         elif track.kind == "video":
             local_video = VideoTransformTrack(
                 track, dc
@@ -338,6 +361,7 @@ async def offer(request):
         @track.on("ended")
         async def on_ended():
             log_info("Track %s ended", track.kind)
+            t2.join()
             # await recorder.stop()
 
     # handle offer
