@@ -79,9 +79,9 @@
 
 
 <div class="w-full flex" id="visio" x-data="{ open2: false }">
-    <div class="w-3/4 relative border">
-        <div id="video-container" x-show="open2" class="flex flex-wrap h-5/6">
-          <div class="relative max-w-full min-w-lg">
+    <div class="relative border w-5/6 flex flex-wrap">
+        <div id="video-container" x-show="open2" class="flex flex-wrap h-5/6 w-full">
+          <div class="relative w-1/2">
               <h2 id="label-username" x-show="open2" class="absolute text-white bg-black z-10 px-5 py-2 rounded-md top-4 left-4" style="background-color: rgba(30,30,30, 0.7)">Prenom</h2>
               <video id="local-video" style="transform: scale(-1, 1); -webkit-transform: scale(-1, 1);" autoplay playsinline></video>
           </div>
@@ -101,7 +101,7 @@
         </div>
     </div>
 
-    <div id="chat" x-show="open2" class="w-1/4 h-screen justify-center text-center bg-white flex flex-col">
+    <div id="chat" x-show="open2" class="h-screen justify-center text-center bg-white flex flex-col">
         <div class="py-3 px-6 border-b border-gray-300">
         Messagerie instantannée
         </div>
