@@ -180,8 +180,7 @@ class VideoTransformTrack(MediaStreamTrack):
             print("RaceOSSDC", e1)
             pass
 
-        print("Step #1")
-        if translation_data.sentence is not None and translation_data.sentence > 0:
+        if translation_data.sentence is not None and len(translation_data.sentence) > 0:
             if translation_data.sentence[0] == 'point' or translation_data.sentence[0] == 'X':
                 # Sentence exists and the first word is a stop word (X or point) hence we clear it
                 # Clear sentence and reinitialize last_word
