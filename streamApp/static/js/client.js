@@ -137,7 +137,10 @@ pc.ondatachannel = function(event) {
   }
   channel.onmessage = function(event) {
     console.log(event.data);
-    dataChannelLog.textContent += event.data + '\n';
+    const para = document.createElement("p");
+    const node = document.createTextNode(event.data);
+    para.appendChild(node);
+    dataChannelLog.append(para);
 
   }
 }
