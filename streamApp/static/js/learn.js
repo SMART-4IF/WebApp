@@ -174,9 +174,4 @@ function stop() {
     pc.getSenders().forEach(function (sender) {
         sender.track.stop();
     });
-
-    // close peer connection
-    setTimeout(function () {
-        pc.close();
-    }, 500);
 }
