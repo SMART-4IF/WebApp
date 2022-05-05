@@ -3,8 +3,11 @@
 import os
 import sys
 
+from streamApp.signai import main as signai
 
 def main():
+    print("Sign ai init...")
+    signai.main()
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'SmartWeb.settings')
     try:
