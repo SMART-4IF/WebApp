@@ -24,7 +24,10 @@ from streamApp import media
 from streamApp.media import mp_holistic
 
 from streamApp.Grammar.traitementGrammaire import StructurePhrase
+from streamApp.signai import evaluation
 from streamApp.streamRecog import MicrophoneStream, listen_print_loop, get_speaker
+
+from streamApp.signai import *
 
 logger = logging.getLogger("pc")
 pcs = set()
@@ -36,6 +39,24 @@ infoColor = infoColor1
 
 mutex = threading.Lock()
 
+pc_sign_translation_data = {}
+
+
+def get_translation_data(pc_id):
+    global pc_sign_translation_data
+    translation_data = pc_sign_translation_data.get(pc_id)
+    if translation_data is None:
+        translation_data = SignTranslationData([], [], [])
+        pc_sign_translation_data[pc_id] = translation_data
+    return translation_data
+
+
+class SignTranslationData:
+    def __init__(self, sentence, sequence, predictions):
+        self.sentence = sentence
+        self.sequence = sequence
+        self.predictions = predictions
+
 
 class VideoTransformTrack(MediaStreamTrack):
     """
@@ -44,7 +65,7 @@ class VideoTransformTrack(MediaStreamTrack):
 
     kind = "video"
 
-    def __init__(self, track, dc):
+    def __init__(self, track, dc, pc_id):
         super().__init__()  # don't forget this!
         self.track = track
         self.dc = dc
@@ -58,8 +79,8 @@ class VideoTransformTrack(MediaStreamTrack):
         self.frameCount = 0
         self.prevFrameCount = 0
         self.frameProcessedCount = 0
-
-        self.last_word = "stop"
+        self.last_word = ""
+        self.pc_id = pc_id
 
     async def recv(self):
         global infoColor
@@ -82,6 +103,8 @@ class VideoTransformTrack(MediaStreamTrack):
 
         timer = cv2.getTickCount()
 
+        translation_data = get_translation_data(self.pc_id)
+
         try:
             img = frame.to_ndarray(format="bgr24")
 
@@ -95,10 +118,14 @@ class VideoTransformTrack(MediaStreamTrack):
             image, results = media.mediapipe_detection(img, self.holistic)
             # (results)
 
+            evaluation.realtime_prediction(mp_data=results, image=image, cv2=cv2, sequence=translation_data.sequence,
+                                           sentence=translation_data.sentence, predictions=translation_data.predictions)
+            print("Sentence = " + str(translation_data.sentence))
+
             timeVal = str(timer)
             y1 = y
 
-            if True:
+            if False:
                 cv2.putText(img, "Alg: " + "mediapipe", (10, y1 - 25), cv2.FONT_HERSHEY_SIMPLEX, 0.75,
                             infoColor, 2)
                 cv2.putText(img, "ImagSize: " + str(w) + "x" + str(h), (10, y1 + 50), cv2.FONT_HERSHEY_SIMPLEX, 0.75,
@@ -122,6 +149,8 @@ class VideoTransformTrack(MediaStreamTrack):
 
                 # print(int(fps))
                 # print(str(int(self.realFPS)))
+
+            # ===========================
 
             delta = time.time() - self.prevTime
             if delta > 1:
@@ -151,21 +180,35 @@ class VideoTransformTrack(MediaStreamTrack):
             print("RaceOSSDC", e1)
             pass
 
-        if self.last_word == "stop":
-            phraseInitiale = ["lui", "manger", "lentement", "lui"]
+        if translation_data.sentence is not None and len(translation_data.sentence) > 0:
+            if translation_data.sentence[0] == 'point' or translation_data.sentence[0] == 'X':
+                # Sentence exists and the first word is a stop word (X or point) hence we clear it
+                # Clear sentence and reinitialize last_word
+                translation_data.sentence = []
+                self.last_word = ''
+            else:
+                self.last_word = translation_data.sentence[-1]
+
+        if self.last_word == 'point' or self.last_word == 'X':
+            phraseInitiale = ["lui", "manger", "carotte", "hier"]
             structurePhrase = StructurePhrase()
             structurePhrase = structurePhrase.traduire(phraseInitiale)
             # debug
             if self.dc.readyState == "open":
                 print(str(structurePhrase))
                 try:
-                    mutex.acquire()
-                    self.dc.send(str(structurePhrase))
-                    mutex.release()
+                    if translation_data.sentence is not None:
+                        mutex.acquire()
+                        formatted_sentence = ' '.join(translation_data.sentence)
+                        print("Sending " + formatted_sentence)
+                        self.dc.send(formatted_sentence)
+                        mutex.release()
                     time.sleep(.1)
                 except Exception as e1:
                     print(e1)
-                self.last_word = ""
+                # Clear sentence and reinitialize last_word
+                self.last_word = ''
+                translation_data.sentence = []
         return new_frame
 
 
@@ -292,7 +335,7 @@ async def offer(request):
             t2.start()
         elif track.kind == "video":
             local_video = VideoTransformTrack(
-                track, dc
+                track, dc, pc_id
             )
             pc.addTrack(local_video)
 
@@ -305,10 +348,12 @@ async def offer(request):
     @dc_audio.on("close")
     def close():
         global threads
-        print("close_"+pc_id)
+        print("close_" + pc_id)
         if t2 is not None:
-            threads[pc_id][0].join(1)
-            threads[pc_id] = (None, True)
+            pc_thread = threads[pc_id][0]
+            if pc_thread is not None and pc_thread.is_alive():
+                pc_thread.join(1)
+                threads[pc_id] = (None, True)
 
     # handle offer
     await pc.setRemoteDescription(offer)
