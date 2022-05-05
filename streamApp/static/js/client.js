@@ -176,7 +176,8 @@ function stop() {
     });
 
     // close peer connection
+    /*
     setTimeout(function () {
         pc.close();
-    }, 500);
+    }, 500);*/
 }
