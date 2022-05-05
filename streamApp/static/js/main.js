@@ -180,6 +180,24 @@ function activateServerSideConnection() {
         //config.iceServers = [{urls: ['stun:stun.l.google.com:19302']}];
         config.iceServers = [{urls: ['stun:race.ossdc.org:5349']}];
 
+        /*config.iceServers= [
+            {
+              'url': 'stun:stun.l.google.com:19302'
+            },
+            {
+              'url': 'turn:192.158.29.39:3478?transport=udp',
+              'credential': 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+              'username': '28224511:1379330808'
+            },
+            {
+              'url': 'turn:192.158.29.39:3478?transport=tcp',
+              'credential': 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+              'username': '28224511:1379330808'
+            }
+          ]*/
+
+
+
         pc = new RTCPeerConnection(config);
 
         // register some listeners to help debugging
@@ -403,6 +421,23 @@ function sendSignal(action, message) {
 function createOfferer(peerUsername, receiver_channel_name) {
     //const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
     const configuration = {'iceServers': [{'urls': 'stun:race.ossdc.org:5349'}]}
+    /*const configuration= {
+      'iceServers': [
+        {
+          'url': 'stun:stun.l.google.com:19302'
+        },
+        {
+          'url': 'turn:192.158.29.39:3478?transport=udp',
+          'credential': 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+          'username': '28224511:1379330808'
+        },
+        {
+          'url': 'turn:192.158.29.39:3478?transport=tcp',
+          'credential': 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+          'username': '28224511:1379330808'
+        }
+      ]
+    }*/
     var peer = new RTCPeerConnection(configuration)
 
     addLocalTracks(peer);
@@ -455,6 +490,23 @@ function createOfferer(peerUsername, receiver_channel_name) {
 function createAnswerer(offer, peerUsername, receiver_channel_name) {
     //const configuration = {'iceServers': [{'urls': 'stun:stun.l.google.com:19302'}]}
     const configuration = {'iceServers': [{'urls': 'stun:race.ossdc.org:5349'}]}
+    /*const configuration= {
+      'iceServers': [
+        {
+          'url': 'stun:stun.l.google.com:19302'
+        },
+        {
+          'url': 'turn:192.158.29.39:3478?transport=udp',
+          'credential': 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+          'username': '28224511:1379330808'
+        },
+        {
+          'url': 'turn:192.158.29.39:3478?transport=tcp',
+          'credential': 'JZEOEt2V3Qb0y27GRntt2u2PAYA=',
+          'username': '28224511:1379330808'
+        }
+      ]
+    }*/
     var peer = new RTCPeerConnection(configuration)
 
     addLocalTracks(peer);
