@@ -216,29 +216,31 @@ class VideoTransformTrack(MediaStreamTrack):
                             print("Sending " + str(structurePhrase))
                             self.dc.send(str(structurePhrase))
                             mutex.release()
-                        time.sleep(.1)
+                            time.sleep(.1)
                     except Exception as e1:
                         print(e1)
                     # Clear sentence and reinitialize last_word
                     self.last_word = ''
                     translation_data.sentence = []
         else:
-            print("NOOOOOOOOOOO NOOOOOOOOOOO NOOOOOOOOOOO NOOOOOOOOOOO")
             if self.dc.readyState == "open":
                 try:
                     if translation_data.sentence is not None and len(translation_data.sentence) > 0:
-                        filtered_sentence = list(filter(lambda el: el != 'X' and el != 'point', filtered_sentence))
+                        filtered_sentence = list(filter(lambda el: el != 'X' and el != 'point', translation_data.sentence))
+                        print("Filetered sentence " + str(filtered_sentence))
                         last_word = filtered_sentence[-1]
-                        mutex.acquire()
-                        print("Sending " + last_word)
-                        self.dc.send(last_word)
-                        mutex.release()
+                        print("Last word " + str(last_word) + " self last word " + str(self.last_word))
+                        if self.last_word != last_word:
+                            mutex.acquire()
+                            print("Sending " + last_word)
+                            self.dc.send(last_word)
+                            mutex.release()
+                            self.last_word = last_word
+                            time.sleep(.1)
                         self.last_word = last_word
-                    time.sleep(.1)
                 except Exception as e1:
                     print(e1)
                 # Clear sentence and reinitialize last_word
-                self.last_word = ''
                 translation_data.sentence = []
 
         return new_frame
