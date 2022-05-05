@@ -251,7 +251,8 @@ function activateServerSideConnection() {
             return fetch('/offer', {
                 body: JSON.stringify({
                     sdp: offer.sdp,
-                    type: offer.type
+                    type: offer.type,
+                    sentenceTranslation: true
                 }),
                 headers: {
                     'Content-Type': 'application/json',

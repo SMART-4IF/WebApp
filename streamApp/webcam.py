@@ -65,7 +65,7 @@ class VideoTransformTrack(MediaStreamTrack):
 
     kind = "video"
 
-    def __init__(self, track, dc, pc_id):
+    def __init__(self, track, dc, pc_id, sentenceTranslation):
         super().__init__()  # don't forget this!
         self.track = track
         self.dc = dc
@@ -81,6 +81,7 @@ class VideoTransformTrack(MediaStreamTrack):
         self.frameProcessedCount = 0
         self.last_word = ""
         self.pc_id = pc_id
+        self.sentenceTranslation = sentenceTranslation
 
     async def recv(self):
         global infoColor
@@ -180,35 +181,66 @@ class VideoTransformTrack(MediaStreamTrack):
             print("RaceOSSDC", e1)
             pass
 
-        if translation_data.sentence is not None and len(translation_data.sentence) > 0:
-            if translation_data.sentence[0] == 'point' or translation_data.sentence[0] == 'X':
-                # Sentence exists and the first word is a stop word (X or point) hence we clear it
-                # Clear sentence and reinitialize last_word
-                translation_data.sentence = []
-                self.last_word = ''
-            else:
-                self.last_word = translation_data.sentence[-1]
-
-        if self.last_word == 'point' or self.last_word == 'X':
-            phraseInitiale = ["lui", "manger", "carotte", "hier"]
-            structurePhrase = StructurePhrase()
-            structurePhrase = structurePhrase.traduire(phraseInitiale)
-            # debug
+        print("STEP #1")
+        if self.sentenceTranslation:
+            print("STEP #1-1")
+            if translation_data.sentence is not None and len(translation_data.sentence) > 0:
+                print("STEP #1-2")
+                if translation_data.sentence[0] == 'point' or translation_data.sentence[0] == 'X':
+                    print("STEP #1-3")
+                    # Sentence exists and the first word is a stop word (X or point) hence we clear it
+                    # Clear sentence and reinitialize last_word
+                    translation_data.sentence = []
+                    self.last_word = ''
+                else:
+                    self.last_word = translation_data.sentence[-1]
+            print("STEP #1-4")
+            if self.last_word == 'point' or self.last_word == 'X':
+                # Sentence pre-processing
+                print("Step #2")
+                filtered_sentence = list(filter(lambda el: el != 'X' and el != 'point', translation_data.sentence))
+                print("Filtered sentence = " + str(filtered_sentence))
+                print("Step #3")
+                filtered_sentence[:] = [x if x != "il" else "lui" for x in filtered_sentence]  # Grammar adjustment
+                print("Step #4")
+                # phraseInitiale = ["lui", "manger", "carotte", "hier"]
+                structurePhrase = StructurePhrase()
+                structurePhrase = structurePhrase.traduire(filtered_sentence)
+                print("Structured phrase = " + str(structurePhrase))
+                # debug
+                if self.dc.readyState == "open":
+                    try:
+                        if translation_data.sentence is not None:
+                            mutex.acquire()
+                            formatted_sentence = ' '.join(translation_data.sentence)
+                            print("Sending " + str(structurePhrase))
+                            self.dc.send(str(structurePhrase))
+                            mutex.release()
+                        time.sleep(.1)
+                    except Exception as e1:
+                        print(e1)
+                    # Clear sentence and reinitialize last_word
+                    self.last_word = ''
+                    translation_data.sentence = []
+        else:
+            print("NOOOOOOOOOOO NOOOOOOOOOOO NOOOOOOOOOOO NOOOOOOOOOOO")
             if self.dc.readyState == "open":
-                print(str(structurePhrase))
                 try:
-                    if translation_data.sentence is not None:
+                    if translation_data.sentence is not None and len(translation_data.sentence) > 0:
+                        filtered_sentence = list(filter(lambda el: el != 'X' and el != 'point', filtered_sentence))
+                        last_word = filtered_sentence[-1]
                         mutex.acquire()
-                        formatted_sentence = ' '.join(translation_data.sentence)
-                        print("Sending " + formatted_sentence)
-                        self.dc.send(formatted_sentence)
+                        print("Sending " + last_word)
+                        self.dc.send(last_word)
                         mutex.release()
+                        self.last_word = last_word
                     time.sleep(.1)
                 except Exception as e1:
                     print(e1)
                 # Clear sentence and reinitialize last_word
                 self.last_word = ''
                 translation_data.sentence = []
+
         return new_frame
 
 
@@ -335,7 +367,7 @@ async def offer(request):
             t2.start()
         elif track.kind == "video":
             local_video = VideoTransformTrack(
-                track, dc, pc_id
+                track, dc, pc_id, params["sentenceTranslation"]
             )
             pc.addTrack(local_video)
 

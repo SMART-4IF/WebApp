@@ -64,8 +64,8 @@ def realtime_prediction(mp_data, image, cv2, sequence, sentence, predictions):
                 else:
                     sentence.append(predicted_action)
 
-        if len(sentence) > 5:
-            sentence = sentence[-5:]
+        if len(sentence) > 10:
+            sentence = sentence[-10:]
 
         # Viz probabilities
         image = prob_viz(res, configuration.actions, image, colors)

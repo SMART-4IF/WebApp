@@ -74,7 +74,8 @@ function negotiate() {
         return fetch('/offer', {
             body: JSON.stringify({
                 sdp: offer.sdp,
-                type: offer.type
+                type: offer.type,
+                sentenceTranslation: false
             }),
             headers: {
                 'Content-Type': 'application/json',
