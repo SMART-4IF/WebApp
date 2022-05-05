@@ -286,7 +286,7 @@ async def offer(request):
 
     @pc.on("track")
     def on_track(track):
-        log_info("Track %s received", track.kind)
+        print("Track %s received", track.kind)
 
         if track.kind == "audio":
             t2.start()

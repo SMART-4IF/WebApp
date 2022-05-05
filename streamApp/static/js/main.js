@@ -162,7 +162,7 @@ var localStream = new MediaStream();
 
 const constraints = {
     'video': true,
-    'audio': true,
+    'audio': true, //TODO : true
 };
 
 function activateServerSideConnection() {

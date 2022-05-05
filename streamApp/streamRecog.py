@@ -132,7 +132,7 @@ def listen_print_loop(responses):
             continue
 
         alternative = result.alternatives[0]
-        transcript = get_speaker(alternative) + alternative.transcript
+        transcript = alternative.transcript
 
         # transcript = get_transcript(result.alternatives[0], None)
 
@@ -151,7 +151,7 @@ def listen_print_loop(responses):
             num_chars_printed = len(transcript)
         else:
             print(transcript + overwrite_chars)
-            return str(transcript + overwrite_chars)
+            return str(transcript + overwrite_chars + "\n")
 
 
 language_code = "fr-FR"  # a BCP-47 language tag
