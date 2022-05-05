@@ -49,9 +49,9 @@ def realtime_prediction(mp_data, image, cv2, sequence, sentence, predictions):
         res = m.model.predict(x=np.expand_dims(sequence_padded, axis=0))[0]
         best_fit = np.argmax(res)
         predicted_action = configuration.actions[best_fit]
-        print('Label = ' + configuration.actions[best_fit] + ' accuracy = ' + str(
-            best_fit) + ' frame number = ' + str(len(sequence)) + ' padded up to ' + str(
-            configuration.max_number_frame))
+        # print('Label = ' + configuration.actions[best_fit] + ' accuracy = ' + str(
+        #    best_fit) + ' frame number = ' + str(len(sequence)) + ' padded up to ' + str(
+        #    configuration.max_number_frame))
         predictions.append(predicted_action)
 
         # 3. Viz logic

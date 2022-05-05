@@ -181,39 +181,28 @@ class VideoTransformTrack(MediaStreamTrack):
             print("RaceOSSDC", e1)
             pass
 
-        print("STEP #1")
         if self.sentenceTranslation:
-            print("STEP #1-1")
             if translation_data.sentence is not None and len(translation_data.sentence) > 0:
-                print("STEP #1-2")
                 if translation_data.sentence[0] == 'point' or translation_data.sentence[0] == 'X':
-                    print("STEP #1-3")
                     # Sentence exists and the first word is a stop word (X or point) hence we clear it
                     # Clear sentence and reinitialize last_word
                     translation_data.sentence = []
                     self.last_word = ''
                 else:
                     self.last_word = translation_data.sentence[-1]
-            print("STEP #1-4")
             if self.last_word == 'point' or self.last_word == 'X':
                 # Sentence pre-processing
-                print("Step #2")
                 filtered_sentence = list(filter(lambda el: el != 'X' and el != 'point', translation_data.sentence))
-                print("Filtered sentence = " + str(filtered_sentence))
-                print("Step #3")
                 filtered_sentence[:] = [x if x != "il" else "lui" for x in filtered_sentence]  # Grammar adjustment
-                print("Step #4")
                 # phraseInitiale = ["lui", "manger", "carotte", "hier"]
                 structurePhrase = StructurePhrase()
                 structurePhrase = structurePhrase.traduire(filtered_sentence)
-                print("Structured phrase = " + str(structurePhrase))
                 # debug
                 if self.dc.readyState == "open":
                     try:
                         if translation_data.sentence is not None:
                             mutex.acquire()
                             formatted_sentence = ' '.join(translation_data.sentence)
-                            print("Sending " + str(structurePhrase))
                             self.dc.send(str(structurePhrase))
                             mutex.release()
                             time.sleep(.1)
@@ -227,12 +216,9 @@ class VideoTransformTrack(MediaStreamTrack):
                 try:
                     if translation_data.sentence is not None and len(translation_data.sentence) > 0:
                         filtered_sentence = list(filter(lambda el: el != 'X' and el != 'point', translation_data.sentence))
-                        print("Filetered sentence " + str(filtered_sentence))
                         last_word = filtered_sentence[-1]
-                        print("Last word " + str(last_word) + " self last word " + str(self.last_word))
                         if self.last_word != last_word:
                             mutex.acquire()
-                            print("Sending " + last_word)
                             self.dc.send(last_word)
                             mutex.release()
                             self.last_word = last_word
