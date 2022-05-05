@@ -4,14 +4,14 @@ This repository contains the complete application
 ## Cloning
 
 ### Step 1 : cloning the whole project
-Use ```git clone https://github.com/SMART-4IF/WebApp.git``` to clone the whole project
+Use ```git clone https://github.com/SMART-4IF/WebApp.git``` to clone the whole project.
 
 ### Step 2 : cloning the grammar module
-Go to the ```WebApp/streamApp/``` folder
-Use ```git clone https://github.com/SMART-4IF/Grammar.git``` to clone the grammar module in the ```WebApp/streamApp/Grammar``` folder
+Go to the ```WebApp/streamApp/``` folder.
+Use ```git clone https://github.com/SMART-4IF/Grammar.git``` to clone the grammar module in the ```WebApp/streamApp/Grammar``` folder.
 
 ### Install the requirements 
-Use ```pip install -r requirements.txt``` to install all the python packages needed
+Use ```pip install -r requirements.txt``` to install all the python packages needed.
 
 
 
