@@ -151,7 +151,7 @@ def listen_print_loop(responses):
             num_chars_printed = len(transcript)
         else:
             print(transcript + overwrite_chars)
-            return str(transcript + overwrite_chars + "\n")
+            return str(transcript.capitalize() + overwrite_chars + ".")
 
 
 language_code = "fr-FR"  # a BCP-47 language tag
