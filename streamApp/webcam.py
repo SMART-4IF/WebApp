@@ -305,7 +305,7 @@ async def offer(request):
     @dc_audio.on("close")
     def close():
         global threads
-        print("close")
+        print("close_"+pc_id)
         if t2 is not None:
             threads[pc_id][0].join(1)
             threads[pc_id] = (None, True)
